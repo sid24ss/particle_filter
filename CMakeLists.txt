@@ -47,10 +47,12 @@ list( APPEND PF_LIBRARIES "-lboost_thread" ) # Need to force linking against thr
 set( PF_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/include" )
 include_directories( ${PF_INCLUDE_DIRECTORIES} )
 
-add_library(pf 	SHARED	src/test.cpp)
+# Add files here to compile them
+add_library(pf 	SHARED	src/Map.cpp)
 
+# Add files here to make executables out of them
 add_executable(test src/test.cpp)
-
+target_link_libraries(test pf ${PF_LIBRARIES})
 
 # add_subdirectory( src )
 
