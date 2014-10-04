@@ -11,5 +11,6 @@ int main () {
         printf("Successfully loaded the map.\n");
     else
         printf("Oops. Map wasn't read.\n");
+    wean_hall.visualize();
     return 0;
 }

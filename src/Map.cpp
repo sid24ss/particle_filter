@@ -1,9 +1,16 @@
-#include <pf/Map.h>
 #include <cstdio>
 
 #include <boost/progress.hpp>
 
+#include <pf/Map.h>
+#include <pf/Visualizer.h>
+
 using namespace pf;
+
+Map::Map() :
+    map_min_(2, 0),
+    map_max_(2, 0)
+{}
 
 bool Map::loadFromFile(std::string file_name)
 {
@@ -40,13 +47,34 @@ bool Map::loadFromFile(std::string file_name)
     printf("dim_y_\t: %lu\n", dim_y_);
     printf("resolution_\t: %f\n", resolution_);
     boost::progress_display show_progress(dim_x_*dim_y_);
-    prob_.resize(dim_x_);
+    map_min_[RobotDOF::X] = dim_x_;
+    map_min_[RobotDOF::Y] = dim_y_;
+    OccupancyGrid raw_map;
+    raw_map.resize(dim_x_);
     for (size_t x = 0; x < dim_x_; ++x) {
-        prob_[x].resize(dim_y_);
+        raw_map[x].resize(dim_y_);
         for (size_t y = 0; y < dim_y_; ++y) {
-            if (fscanf(fin, "%lf ", &prob_[x][y]) <= 0)
+            if (fscanf(fin, "%lf ", &raw_map[x][y]) <= 0)
                 return false;
+            if (raw_map[x][y] >= 0.0f) {
+                if (map_min_[RobotDOF::X] > x)
+                    map_min_[RobotDOF::X] = x;
+                if (map_max_[RobotDOF::X] < x)
+                    map_max_[RobotDOF::X] = x;
+                if (map_min_[RobotDOF::Y] > y)
+                    map_min_[RobotDOF::Y] = y;
+                if (map_max_[RobotDOF::Y] < y)
+                    map_max_[RobotDOF::Y] = y;
+            }
             ++show_progress;
+        }
+    }
+    // crop the map
+    prob_.resize(map_max_[RobotDOF::X] - map_min_[RobotDOF::X] + 1);
+    for (size_t x = map_min_[RobotDOF::X]; x <= map_max_[RobotDOF::X]; ++x){
+        prob_[x-map_min_[RobotDOF::X]].resize(map_max_[RobotDOF::Y] - map_min_[RobotDOF::Y] + 1);
+        for (size_t y = map_min_[RobotDOF::Y]; y <= map_max_[RobotDOF::Y]; ++y){
+            prob_[x-map_min_[RobotDOF::X]][y - map_min_[RobotDOF::Y]] = raw_map[x][y];
         }
     }
     return true;
@@ -60,4 +88,10 @@ std::pair <size_t, size_t> Map::getDims()
 std::pair <double, double> Map::getSize()
 {
     return std::make_pair(dim_x_*resolution_, dim_y_*resolution_);
+}
+
+void Map::visualize()
+{
+    printf("visualizing map\n");
+    Visualizer::visualizeArray(prob_);
 }
