@@ -10,7 +10,6 @@ namespace pf {
     public:
         static void setWindowName(std::string name) { window_name_ = name; }
         static void visualizeArray(OccupancyGrid& grid);
-        // static void visualizeVector(size_t x, size_t y, const std::vector<double>& data);
     private:
         static std::string window_name_;
     };
