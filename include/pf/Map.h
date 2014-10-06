@@ -20,6 +20,10 @@ namespace pf {
         bool loadFromFile(std::string file_name);
         // visualize the map
         void visualize();
+        // convert the (x,y) of the world to the (x,y) of the grid.
+        std::pair<size_t, size_t> worldToGrid(double x, double y);
+        // convert the (x,y) of the grid to the (x,y) of the world.
+        std::pair<double, double> gridToWorld(size_t x, size_t y);
     private:
         // The underlying structure that stores the grid
         OccupancyGrid prob_;
