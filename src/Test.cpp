@@ -2,17 +2,14 @@
 #include <vector>
 #include <math.h>
 
+#include <pf/RobotState.h>
 #include <pf/Constants.h>
 #include <pf/Utilities.h>
 #include <pf/Test.h>
 #include <pf/Map.h>
-#include <pf/RobotState.h>
+#include <pf/Log.h>
 
 using namespace pf;
-
-Test::Test()
-{
-}
 
 bool Test::testMap(std::string file_name)
 {
@@ -48,4 +45,10 @@ bool Test::testATan2(double y, double x)
 bool Test::testShortestAngularDistance(double th_1, double th_2)
 {
     printf("Answer in degrees: %.2f.\n",RAD2DEG(shortest_angular_distance(DEG2RAD(th_1),DEG2RAD(th_2))));
+}
+
+bool Test::testLogReading(std::string file_name)
+{
+    Log log_reader(file_name);
+    return true;
 }
