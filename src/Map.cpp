@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cassert>
 
 #include <boost/progress.hpp>
 
@@ -82,6 +83,44 @@ std::pair <size_t, size_t> Map::getDims()
 std::pair <double, double> Map::getSize()
 {
     return std::make_pair(dim_x_*resolution_, dim_y_*resolution_);
+}
+
+/**
+ * @brief converts the continuous coordinates to the grid coordinates
+ * 
+ * @param x x in the world
+ * @param y y in the world
+ * 
+ * @return a pair (x,y) in the grid
+ */
+std::pair<size_t, size_t> Map::worldToGrid(double x, double y)
+{
+    size_t x_d = static_cast<size_t>(x/resolution_ + 0.5);
+    size_t y_d = static_cast<size_t>(y/resolution_ + 0.5);
+    // if it exceeds the dimensions, snap to the last valid state.
+    if (x_d == dim_x_)
+        x_d--;
+    if (y_d == dim_y_)
+        y_d--;
+    assert(x_d >= 0 && x_d < dim_x_ && y_d >=0 && y_d < dim_y_);
+    return std::make_pair(x_d, y_d);
+}
+
+/**
+ * @brief converts the discrete map coordinates to the continuous world coords
+ * @details Can only project to the closest in the resolution. Typically, you
+ * don't want to be going this way.
+ * 
+ * @param x_d the discrete x coordinate
+ * @param y_d the discrete y coordinate
+ * 
+ * @return a pair (x, y) in the world
+ */
+std::pair<double, double> Map::gridToWorld(size_t x_d, size_t y_d)
+{
+    double x = static_cast<double>(x_d) * resolution_;
+    double y = static_cast<double>(y_d) * resolution_;
+    return std::make_pair(x, y);
 }
 
 void Map::visualize()

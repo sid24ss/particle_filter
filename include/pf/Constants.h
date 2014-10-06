@@ -5,6 +5,7 @@ namespace pf {
 
     typedef std::vector<std::vector <double> > OccupancyGrid;
 
+
     class OccupancyState {
     public:
         enum {
