@@ -49,7 +49,8 @@ include_directories( ${PF_INCLUDE_DIRECTORIES} )
 
 # Add files here to compile them
 add_library(pf 	SHARED	src/Map.cpp
-						src/Visualizer.cpp)
+						src/Visualizer.cpp
+						src/Log.cpp)
 
 target_link_libraries(pf ${PF_LIBRARIES})
 
