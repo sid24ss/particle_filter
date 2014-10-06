@@ -1,45 +1,44 @@
 #include <pf/RobotState.h>
+#include <pf/Constants.h>
 
 using namespace pf;
 
-RobotState::RobotState()
+RobotState::RobotState() : state_(3,0)
 {
-    std::vector<double> state_ (3,0);
 }
 
-RobotState::RobotState(std::vector<double> state)
+RobotState::RobotState(std::vector<double> state) : state_(state)
 {
-    std::vector<double> state_(state);
 }
 
 void RobotState::x(double x)
 {
-    state_[0] = x;
+    state_[RobotDOF::X] = x;
 }
 
 double RobotState::x()
 {
-    return state_[0];
+    return state_[RobotDOF::X];
 }
 
 void RobotState::y(double y)
 {
-    state_[1] = y;
+    state_[RobotDOF::Y] = y;
 }
 
 double RobotState::y()
 {
-    return state_[1];
+    return state_[RobotDOF::Y];
 }
 
 void RobotState::theta(double theta)
 {
-    state_[2] = theta;
+    state_[RobotDOF::THETA] = theta;
 }
 
 double RobotState::theta()
 {
-    return state_[2];
+    return state_[RobotDOF::THETA];
 }
 
 void RobotState::state(std::vector<double> state)
