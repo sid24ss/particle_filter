@@ -7,7 +7,10 @@
 
 using namespace pf;
 
-Map::Map() {}
+Map::Map() :
+    map_min_(2,0),
+    map_max_(2,0)
+{}
 
 bool Map::loadFromFile(std::string file_name)
 {
@@ -44,45 +47,30 @@ bool Map::loadFromFile(std::string file_name)
     printf("dim_y_\t: %lu\n", dim_y_);
     printf("resolution_\t: %f\n", resolution_);
 
-    // These keep a track of the range within which the map falls.
-    std::vector<size_t> map_min(2,0);
-    std::vector<size_t> map_max(2,0);
     // initialize to extremes
-    map_min[RobotDOF::X] = dim_x_;
-    map_min[RobotDOF::Y] = dim_y_;
+    map_min_[RobotDOF::X] = dim_x_;
+    map_min_[RobotDOF::Y] = dim_y_;
 
-    OccupancyGrid raw_map;
-    raw_map.resize(dim_x_);
+    prob_.resize(dim_x_);
     boost::progress_display show_progress(dim_x_*dim_y_);
     for (size_t x = 0; x < dim_x_; ++x) {
-        raw_map[x].resize(dim_y_);
+        prob_[x].resize(dim_y_);
         for (size_t y = 0; y < dim_y_; ++y) {
-            if (fscanf(fin, "%lf ", &raw_map[x][y]) <= 0)
+            if (fscanf(fin, "%lf ", &prob_[x][y]) <= 0)
                 return false;
-            if (raw_map[x][y] >= 0.0f) {
-                if (map_min[RobotDOF::X] > x)
-                    map_min[RobotDOF::X] = x;
-                if (map_max[RobotDOF::X] < x)
-                    map_max[RobotDOF::X] = x;
-                if (map_min[RobotDOF::Y] > y)
-                    map_min[RobotDOF::Y] = y;
-                if (map_max[RobotDOF::Y] < y)
-                    map_max[RobotDOF::Y] = y;
+            if (prob_[x][y] >= 0.0f) {
+                if (map_min_[RobotDOF::X] > x)
+                    map_min_[RobotDOF::X] = x;
+                if (map_max_[RobotDOF::X] < x)
+                    map_max_[RobotDOF::X] = x;
+                if (map_min_[RobotDOF::Y] > y)
+                    map_min_[RobotDOF::Y] = y;
+                if (map_max_[RobotDOF::Y] < y)
+                    map_max_[RobotDOF::Y] = y;
             }
             ++show_progress;
         }
     }
-    // crop the map
-    prob_.resize(map_max[RobotDOF::X] - map_min[RobotDOF::X] + 1);
-    for (size_t x = map_min[RobotDOF::X]; x <= map_max[RobotDOF::X]; ++x){
-        prob_[x-map_min[RobotDOF::X]].resize(map_max[RobotDOF::Y] - map_min[RobotDOF::Y] + 1);
-        for (size_t y = map_min[RobotDOF::Y]; y <= map_max[RobotDOF::Y]; ++y){
-            prob_[x-map_min[RobotDOF::X]][y - map_min[RobotDOF::Y]] = raw_map[x][y];
-        }
-    }
-    // set the dimensions to the dimensions of our cropped map
-    dim_x_ = prob_.size();
-    dim_y_ = prob_[0].size();
     return true;
 }
 
@@ -99,5 +87,14 @@ std::pair <double, double> Map::getSize()
 void Map::visualize()
 {
     printf("visualizing map\n");
-    Visualizer::visualizeArray(prob_);
+    OccupancyGrid data;
+    // crop the map
+    data.resize(map_max_[RobotDOF::X] - map_min_[RobotDOF::X] + 1);
+    for (size_t x = map_min_[RobotDOF::X]; x <= map_max_[RobotDOF::X]; ++x){
+        data[x-map_min_[RobotDOF::X]].resize(map_max_[RobotDOF::Y] - map_min_[RobotDOF::Y] + 1);
+        for (size_t y = map_min_[RobotDOF::Y]; y <= map_max_[RobotDOF::Y]; ++y){
+            data[x-map_min_[RobotDOF::X]][y - map_min_[RobotDOF::Y]] = prob_[x][y];
+        }
+    }
+    Visualizer::visualizeArray(data);
 }
