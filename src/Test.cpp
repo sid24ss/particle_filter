@@ -1,16 +1,13 @@
 #include <string>
 #include <vector>
 
+#include <pf/RobotState.h>
 #include <pf/Constants.h>
 #include <pf/Test.h>
 #include <pf/Map.h>
-#include <pf/RobotState.h>
+#include <pf/Log.h>
 
 using namespace pf;
-
-Test::Test()
-{
-}
 
 bool Test::testMap(std::string file_name)
 {
@@ -37,3 +34,8 @@ bool Test::testRobotState(std::vector<double> input_state)
     return true;
 }
 
+bool Test::testLogReading(std::string file_name)
+{
+    Log log_reader(file_name);
+    return true;
+}
