@@ -52,7 +52,10 @@ add_library(pf 	SHARED	src/Map.cpp
 						src/Visualizer.cpp
 						src/Log.cpp
                         src/RobotState.cpp
-                        src/Test.cpp)
+                        src/Test.cpp
+                        src/MotionModel.cpp
+                        src/Particle.cpp
+                        )
 
 target_link_libraries(pf ${PF_LIBRARIES})
 

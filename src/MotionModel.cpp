@@ -5,17 +5,15 @@
 
 using namespace pf;
 
-MotionModel()
-{
-    std::random_device rd;
-    generator_( rd() );
-}
+MotionModel::MotionModel() :     
+    distribution_(0.0, 1.0), 
+    generator_( (unsigned int)time(0)) {}
 
-RobotState sampleNextState(const RobotState& state_1, const OdometryReading& odom_1, const OdometryReading& odom_2);
+RobotState MotionModel::sampleNextState(const RobotState& state_1, const OdometryReading& odom_1, const OdometryReading& odom_2)
 {
     // differentials in odometry frame
     double d_th_enc_1 = shortest_angular_distance(odom_1.theta, atan2(odom_2.y-odom_1.y, odom_2.x-odom_1.x));
-    double d_s_enc = sqrt((odom_2.y-odom_1.y)^2 + (odom_2.x-odom_1.x)^2);
+    double d_s_enc = sqrt(pow((odom_2.y-odom_1.y), 2) + pow((odom_2.x-odom_1.x), 2));
     double d_th_enc_2 = shortest_angular_distance(d_th_enc_1 + odom_1.theta, odom_2.theta);
 
     // standard deviations for differentials' noise
@@ -30,9 +28,9 @@ RobotState sampleNextState(const RobotState& state_1, const OdometryReading& odo
 
     // sample next state
     RobotState state_2;
-    state_2.x(state_1.x + cos(state_1.theta + d_th_1));
-    state_2.y(state_1.y + sin(state_1.theta + d_th_1));
-    state_2.theta(normalize_angle(state_1.theta + d_th_1 + d_th_2));
+    state_2.x(state_1.x() + d_s*cos(state_1.theta() + d_th_1));
+    state_2.y(state_1.y() + d_s*sin(state_1.theta() + d_th_1));
+    state_2.theta(normalize_angle(state_1.theta() + d_th_1 + d_th_2));
 
     return state_2;
 }

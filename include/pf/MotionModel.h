@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <random>
+#include <vector>
 
 #include <pf/RobotState.h>
 #include <pf/Log.h>
@@ -11,9 +12,9 @@ namespace pf {
         MotionModel();
         RobotState sampleNextState(const RobotState& state_1, const OdometryReading& odom_1, const OdometryReading& odom_2);
     private:
-        std::default_random_enginer generator_;
-        std::normal_distribution<double> distribution_(0.0, 1.0);
-        };
+        std::default_random_engine generator_;
+        std::normal_distribution<double> distribution_;
+    };
 };
         
         
