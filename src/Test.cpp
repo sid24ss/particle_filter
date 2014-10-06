@@ -60,9 +60,16 @@ bool Test::testLogReading(std::string file_name)
 
 bool Test::testMotionModel(RobotState state_1, OdometryReading odom_1, OdometryReading odom_2)
 {
+    RobotState state_2;
     MotionModel model = MotionModel();
     cv::Mat image =  cv::Mat::zeros( 400, 400, CV_8UC3 );
-    cv::circle(image, cv::Point(state_1.x(), state_1.y()), 0.5, cv::Scalar(0, 0, 255), -1);
+    cv::circle(image, cv::Point(state_1.x(), state_1.y()), 2, cv::Scalar(0, 0, 255), -1, 8);
+    for (int i = 0; i < 50; ++i) {
+        state_2 = model.sampleNextState(state_1, odom_1, odom_2);
+        cv::circle(image, cv::Point(state_2.x(), state_2.y()), 2, cv::Scalar(255, 0, 0), -1, 8);
+        }
+    cv::imshow("Image",image);
+    cv::waitKey(0);
     return true;
 }
 
