@@ -1,7 +1,9 @@
 #include <string>
 #include <vector>
+#include <math.h>
 
 #include <pf/Constants.h>
+#include <pf/Utilities.h>
 #include <pf/Test.h>
 #include <pf/Map.h>
 #include <pf/RobotState.h>
@@ -37,3 +39,13 @@ bool Test::testRobotState(std::vector<double> input_state)
     return true;
 }
 
+bool Test::testATan2(double y, double x)
+{
+    double th = atan2(y, x);
+    printf("Answer in degrees: %.2f.\n", RAD2DEG(th));
+}
+
+bool Test::testShortestAngularDistance(double th_1, double th_2)
+{
+    printf("Answer in degrees: %.2f.\n",RAD2DEG(shortest_angular_distance(DEG2RAD(th_1),DEG2RAD(th_2))));
+}
