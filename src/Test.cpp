@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
@@ -63,5 +63,23 @@ bool Test::testMotionModel(RobotState state_1, OdometryReading odom_1, OdometryR
     MotionModel model = MotionModel();
     cv::Mat image =  cv::Mat::zeros( 400, 400, CV_8UC3 );
     cv::circle(image, cv::Point(state_1.x(), state_1.y()), 0.5, cv::Scalar(0, 0, 255), -1);
+    return true;
+}
+
+bool Test::testLogGetter(std::string file_name)
+{
+    Log log_data(file_name);
+    // read the first test_num values
+    int test_num = 10;
+    for (int i = 0; i < test_num; ++i) {
+        SensorReading next_reading = log_data.getNextReading();
+        if (!next_reading.is_laser) {
+            printf("ODOM type\n");
+            next_reading.print();
+        } else {
+            printf("LASER type\n");
+            next_reading.print();
+        }
+    }
     return true;
 }

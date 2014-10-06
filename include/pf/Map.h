@@ -13,17 +13,17 @@ namespace pf {
     public:
         Map();
         // returns the dimensions of the cells underneath.
-        std::pair <size_t, size_t> getDims();
+        std::pair <size_t, size_t> getDims() const;
         // returns the size of the map (dim * resolution)
-        std::pair <double, double> getSize();
+        std::pair <double, double> getSize() const;
         // loads the map from file
         bool loadFromFile(std::string file_name);
         // visualize the map
-        void visualize();
+        void visualize() const;
         // convert the (x,y) of the world to the (x,y) of the grid.
-        std::pair<size_t, size_t> worldToGrid(double x, double y);
+        std::pair<size_t, size_t> worldToGrid(double x, double y) const;
         // convert the (x,y) of the grid to the (x,y) of the world.
-        std::pair<double, double> gridToWorld(size_t x, size_t y);
+        std::pair<double, double> gridToWorld(size_t x, size_t y) const;
     private:
         // The underlying structure that stores the grid
         OccupancyGrid prob_;

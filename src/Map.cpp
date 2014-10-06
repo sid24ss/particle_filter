@@ -75,12 +75,12 @@ bool Map::loadFromFile(std::string file_name)
     return true;
 }
 
-std::pair <size_t, size_t> Map::getDims()
+std::pair <size_t, size_t> Map::getDims() const
 {
     return std::make_pair(dim_x_, dim_y_);
 }
 
-std::pair <double, double> Map::getSize()
+std::pair <double, double> Map::getSize() const
 {
     return std::make_pair(dim_x_*resolution_, dim_y_*resolution_);
 }
@@ -93,7 +93,7 @@ std::pair <double, double> Map::getSize()
  * 
  * @return a pair (x,y) in the grid
  */
-std::pair<size_t, size_t> Map::worldToGrid(double x, double y)
+std::pair<size_t, size_t> Map::worldToGrid(double x, double y) const
 {
     size_t x_d = static_cast<size_t>(x/resolution_ + 0.5);
     size_t y_d = static_cast<size_t>(y/resolution_ + 0.5);
@@ -116,14 +116,14 @@ std::pair<size_t, size_t> Map::worldToGrid(double x, double y)
  * 
  * @return a pair (x, y) in the world
  */
-std::pair<double, double> Map::gridToWorld(size_t x_d, size_t y_d)
+std::pair<double, double> Map::gridToWorld(size_t x_d, size_t y_d) const
 {
     double x = static_cast<double>(x_d) * resolution_;
     double y = static_cast<double>(y_d) * resolution_;
     return std::make_pair(x, y);
 }
 
-void Map::visualize()
+void Map::visualize() const
 {
     printf("visualizing map\n");
     OccupancyGrid data;
