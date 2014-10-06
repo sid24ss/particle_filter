@@ -45,14 +45,16 @@ list( APPEND PF_LIBRARIES ${Boost_LIBRARIES} )
 list( APPEND PF_LIBRARIES "-lboost_thread" ) # Need to force linking against threads
 
 set( PF_INCLUDE_DIRECTORIES "${PROJECT_SOURCE_DIR}/include" )
-include_directories( ${PF_INCLUDE_DIRECTORIES} )
+include_directories(${PF_INCLUDE_DIRECTORIES})
 
 # Add files here to compile them
-add_library(pf 	SHARED	src/Map.cpp
-						src/Visualizer.cpp
-						src/Log.cpp
+add_library(pf  SHARED  src/Map.cpp
+                        src/Visualizer.cpp
+                        src/Log.cpp
                         src/RobotState.cpp
                         src/Test.cpp)
+
+set_target_properties(pf PROPERTIES OUTPUT_NAME pf)
 
 target_link_libraries(pf ${PF_LIBRARIES})
 

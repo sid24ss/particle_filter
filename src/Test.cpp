@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <cmath>
 
 #include <pf/RobotState.h>
 #include <pf/Constants.h>
@@ -37,5 +38,23 @@ bool Test::testRobotState(std::vector<double> input_state)
 bool Test::testLogReading(std::string file_name)
 {
     Log log_reader(file_name);
+    return true;
+}
+
+bool Test::testLogGetter(std::string file_name)
+{
+    Log log_data(file_name);
+    // read the first test_num values
+    int test_num = 10;
+    for (int i = 0; i < test_num; ++i) {
+        SensorReading next_reading = log_data.getNextReading();
+        if (!next_reading.is_laser) {
+            printf("ODOM type\n");
+            next_reading.print();
+        } else {
+            printf("LASER type\n");
+            next_reading.print();
+        }
+    }
     return true;
 }

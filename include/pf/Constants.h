@@ -1,10 +1,8 @@
 #pragma once
-#define M_PI           3.14159265358979323846  /* pi */
 
 namespace pf {
 
     typedef std::vector<std::vector <double> > OccupancyGrid;
-
 
     class OccupancyState {
     public:
@@ -17,10 +15,18 @@ namespace pf {
 
     class RobotDOF {
     public:
-        enum{
+        enum {
             X,
             Y,
             THETA
+        };
+    };
+
+    class LogReadingType {
+    public:
+        enum type {
+            ODOM,
+            LASER
         };
     };
 }
