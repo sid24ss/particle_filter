@@ -2,6 +2,6 @@
 
 using namespace pf;
 
-Particle:Particle(RobotState state) : state_(state)
+Particle::Particle(RobotState state) : state_(state)
 {
 }

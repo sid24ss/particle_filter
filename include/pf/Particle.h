@@ -1,6 +1,8 @@
 #pragma once
-#Include <iostream>
+#include <iostream>
 #include <vector>
+
+#include <pf/RobotState.h>
 
 namespace pf {
     class Particle {
