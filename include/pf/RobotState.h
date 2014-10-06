@@ -5,7 +5,7 @@
 
 #include <pf/Constants.h>
 
-namespace pf{
+namespace pf {
     class RobotState {
     public:
         RobotState() : state_(3, 0) { }
