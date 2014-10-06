@@ -1,5 +1,7 @@
 #pragma once
 
+#include <pf/Utilities.h>
+
 namespace pf {
 
     typedef std::vector<std::vector <double> > OccupancyGrid;
@@ -21,12 +23,12 @@ namespace pf {
             THETA
         };
     };
-
-    class LogReadingType {
-    public:
-        enum type {
-            ODOM,
-            LASER
-        };
+    
+    struct MotionModelParams {
+        static constexpr double alpha_1 = 1.0/30.0;
+        // assumes distance in cm and angle in rad!
+        static constexpr double alpha_2  = DEG2RAD(2)/(15);
+        static constexpr double alpha_3 = 1.0/30.0;
+        static constexpr double alpha_4 = 0.0;
     };
 }
