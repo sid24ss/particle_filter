@@ -5,6 +5,7 @@
 
 #include <pf/MotionModel.h>
 #include <pf/SensorModel.h>
+#include <pf/Resampler.h>
 #include <pf/Map.h>
 #include <pf/Particle.h>
 #include <pf/Log.h>
@@ -13,7 +14,7 @@ namespace pf {
     class ParticleFilter
     {
     public:
-        ParticleFilter(MapPtr map_ptr, std::string file_name, size_t num_particles) : map_(map_ptr), log_(file_name), num_particles_(num_particles), motion_model_(), sensor_model_(map_) {}
+        ParticleFilter(MapPtr map_ptr, std::string file_name, size_t num_particles);
         ~ParticleFilter();
         void initialize();
         void updateBelief();
@@ -28,5 +29,6 @@ namespace pf {
         size_t num_particles_;
         MotionModel motion_model_;
         SensorModel sensor_model_;
+        std::unique_ptr<Resampler> resampler_;
     };
 }

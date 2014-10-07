@@ -1,7 +1,11 @@
 #pragma once
 #include <cmath>
+#include <algorithm>
+
 #define RAD2DEG(th) th*180/M_PI
 #define DEG2RAD(th) th*M_PI/180
+
+namespace pf {
 
 static inline double normalize_angle_positive(double angle)
 {
@@ -26,3 +30,15 @@ static inline double shortest_angular_distance(double from, double to)
     return normalize_angle(result);
 }
 
+inline void normalizeData(std::vector<double>& data)
+{
+    double sum_of_weights;
+    std::for_each(data.begin(), data.end(),
+        [&sum_of_weights](double val){sum_of_weights += val; }
+    );
+    std::for_each(data.begin(), data.end(),
+        [sum_of_weights](double& val){ val /= sum_of_weights; }
+    );
+}
+
+} // pf

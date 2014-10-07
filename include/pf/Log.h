@@ -11,6 +11,7 @@ namespace pf {
         double x;
         double y;
         double theta;
+        bool operator==(const OdometryReading& other);
     };
 
     class SensorReading {

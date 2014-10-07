@@ -137,10 +137,12 @@ bool Map::withinRange(double x, double y)
 bool Map::isFree(double x, double y)
 {
     std::pair<size_t, size_t> coords = worldToGrid(x, y);
-    if (withinRange(x, y) &
-        prob_[coords.first][coords.second] <= MapParams::FREE_THRESHOLD & 
-        prob_[coords.first][coords.second] >= 0)
+    if (withinRange(x, y) &&
+        prob_[coords.first][coords.second] <= static_cast<double>(OccupancyState::FREE) &&
+        prob_[coords.first][coords.second] >= static_cast<double>(OccupancyState::FREE) - MapParams::FREE_TOL)
+    {
         return true;
+    }
     return false;
 }
 
@@ -197,9 +199,9 @@ double Map::getNominalReading(const RobotState& robot_state, double bearing)
         // printf("current x : %f, y : %f\n", x, y);
         map_current_coords = worldToGrid(x, y);
     } while (
-        // prob_[map_current_coords.first][map_current_coords.second] <
-        //                                             MapParams::WALL_THRESHOLD
-    prob_[map_current_coords.first][map_current_coords.second] >= 0.1
-    && withinRange(x, y));
+        prob_[map_current_coords.first][map_current_coords.second] >= 
+        static_cast<double>(OccupancyState::OCCUPIED) + MapParams::WALL_TOL
+        && withinRange(x, y)
+    );
     return current_distance;
 }

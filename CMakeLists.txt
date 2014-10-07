@@ -57,7 +57,8 @@ add_library(pf  SHARED  src/Map.cpp
                         src/Particle.cpp
                         src/SensorModel.cpp
                         src/ParticleFilter.cpp
-                        )
+                        src/Resampler.cpp
+                    )
 
 set_target_properties(pf PROPERTIES OUTPUT_NAME pf)
 

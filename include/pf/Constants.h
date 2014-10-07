@@ -12,8 +12,8 @@ namespace pf {
     public:
         enum {
             UNKNOWN = -1,
-            FREE,
-            OCCUPIED
+            OCCUPIED,   // 0
+            FREE        // 1
         };
     };
 
@@ -48,8 +48,9 @@ namespace pf {
 
     namespace MapParams {
         // TODO: tune these parameters
-
-        const double WALL_THRESHOLD = 0.9;
-        const double FREE_THRESHOLD = 0;
+        // Note : The Map is occupied if the prob_ value is 0
+        // unoccupied if prob_ value is 1
+        const double WALL_TOL = 0.1;
+        const double FREE_TOL = 0.0;
     }
 }

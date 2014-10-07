@@ -4,6 +4,13 @@
 
 using namespace pf;
 
+bool OdometryReading::operator==(const OdometryReading& other)
+{
+    return (this->x == other.x &&
+            this->y == other.y &&
+            this->theta == other.theta);
+}
+
 void SensorReading::print()
 {
     if (!is_laser) {
