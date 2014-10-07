@@ -28,6 +28,8 @@ namespace pf {
         std::pair<double, double> gridToWorld(size_t x, size_t y) const;
         // is within range
         bool withinRange(double x, double y);
+        // position within range, not in collision, not in unknown space
+        bool isFree(double x, double y);
         // ray tracing functions
         double getNominalReading(const RobotState& robot_state, double bearing);
     private:

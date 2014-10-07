@@ -134,6 +134,16 @@ bool Map::withinRange(double x, double y)
         &&  y >= 0 && y < dim_y_*resolution_);
 }
 
+bool Map::isFree(double x, double y)
+{
+    std::pair<size_t, size_t> coords = worldToGrid(x, y);
+    if (withinRange(x, y) &
+        prob_[coords.first][coords.second] <= MapParams::FREE_THRESHOLD & 
+        prob_[coords.first][coords.second] >= 0)
+        return true;
+    return false;
+}
+
 OccupancyGrid Map::getCroppedMap() const
 {
     OccupancyGrid data;
