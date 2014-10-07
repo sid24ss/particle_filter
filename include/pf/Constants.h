@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <numeric>
 
 #include <pf/Utilities.h>
 
@@ -39,9 +40,7 @@ namespace pf {
         const double min_range = 0.0;
         inline std::vector<double> getBearings() {
             std::vector<double> bearings(180,0);
-            for (std::size_t i = 0; i < 180; ++i) {
-                bearings[i] = DEG2RAD(i-90);
-            }
+            std::iota(bearings.begin(), bearings.end(), -90);
             return bearings;
         }
         const double skip = 5;

@@ -39,23 +39,22 @@ void Visualizer::showMap()
     // waitKey(0);
 }
 
-void Visualizer::plotRayTrace(const RobotState& robot_state)
+void Visualizer::plotRayTrace(const RobotState& robot_state, std::vector<double> bearings)
 {
     Mat current_image = map_img_.clone();
     visualizeRobotPose(current_image, robot_state);
     // get the map coordinates
     auto d_robot = map_->worldToGrid(robot_state.x(), robot_state.y());
     cv::Point robot(d_robot.first, dim_y_ - d_robot.second);
-    // get the trace for each angle
-    // for now, just go from -90 to 89
-    for (int r = -90; r < 89; ++r) {
-        double nominal_reading = map_->getNominalReading(robot_state, DEG2RAD(r));
+    for (auto bearing : bearings) {
+        // get the nominal reading
+        double nominal_reading = map_->getNominalReading(robot_state, bearing);
         // convert this to a line and plot
         double new_x = robot_state.x() + nominal_reading*std::cos(
-                                normalize_angle(robot_state.theta() + DEG2RAD(r))
+                                normalize_angle(robot_state.theta() + bearing)
                             );
         double new_y = robot_state.y() + nominal_reading*std::sin(
-                                normalize_angle(robot_state.theta() + DEG2RAD(r))
+                                normalize_angle(robot_state.theta() + bearing)
                             );
         auto d_new_coords = map_->worldToGrid(new_x, new_y);
         cv::Point range_point(d_new_coords.first, dim_y_ - d_new_coords.second);
@@ -67,6 +66,8 @@ void Visualizer::plotRayTrace(const RobotState& robot_state)
 void Visualizer::visualizeRobotPose(Mat& current_image, const RobotState& state)
 {
     auto d_robot = map_->worldToGrid(state.x(), state.y());
-    circle(current_image, Point(d_robot.first, dim_y_ - d_robot.second), 5, 
-        Scalar(0, 0, 255));
+    int radius = 2;
+    int thickness = -1;
+    circle(current_image, Point(d_robot.first, dim_y_ - d_robot.second), radius, 
+        Scalar(0, 0, 255), thickness);
 }

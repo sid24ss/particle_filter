@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <numeric>
+#include <algorithm>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <boost/math/distributions.hpp>
@@ -106,7 +108,11 @@ bool Test::testRayTrace(std::string map_file)
     Visualizer viz("test_ray_trace", mapptr);
     RobotState test_state(3900, 4000, DEG2RAD(-179));
     // viz.showMap();
-    viz.plotRayTrace(test_state);
+    std::vector<double> test_bearings(180,0);
+    std::iota(test_bearings.begin(), test_bearings.end(), -90);
+    std::for_each(test_bearings.begin(), test_bearings.end(), [](double& val)
+                                    {val = DEG2RAD(val); });
+    viz.plotRayTrace(test_state, test_bearings);
     cv::waitKey(0);
     return true;
 }

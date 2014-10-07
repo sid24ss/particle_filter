@@ -15,7 +15,7 @@ namespace pf {
     public:
         Visualizer(std::string windowname, MapPtr map);
         void setWindowName(std::string name) { window_name_ = name; }
-        void plotRayTrace(const RobotState& robot_state);
+        void plotRayTrace(const RobotState& robot_state, std::vector<double> bearing);
         void visualizeRobotPose(cv::Mat& current_image, const RobotState& state);
 
         void showMap();
