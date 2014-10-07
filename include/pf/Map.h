@@ -26,6 +26,8 @@ namespace pf {
         std::pair<size_t, size_t> worldToGrid(double x, double y) const;
         // convert the (x,y) of the grid to the (x,y) of the world.
         std::pair<double, double> gridToWorld(size_t x, size_t y) const;
+        // is within range
+        bool withinRange(double x, double y);
         // ray tracing functions
         double getNominalReading(const RobotState& robot_state, double bearing);
     private:

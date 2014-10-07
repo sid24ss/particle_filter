@@ -4,6 +4,12 @@
 
 #include <pf/RobotState.h>
 #include <pf/Log.h>
+#include <pf/Map.h>
+#include <pf/Visualizer.h>
+#include <pf/Constants.h>
+#include <pf/Utilities.h>
+#include <pf/MotionModel.h>
+
 
 namespace pf{
     class Test {
@@ -16,5 +22,6 @@ namespace pf{
         bool testMotionModel(RobotState state_1, OdometryReading odom_1, OdometryReading odom_2);
         bool testLogGetter(std::string file_name);
         bool testBoostDistributions();
+        bool testRayTrace(std::string map_name);
     };
 };

@@ -22,6 +22,7 @@ int main () {
     if (!t.testMotionModel(state_1, odom_1, odom_2))
         printf("motion model test failed\n");
     */
-    t.testBoostDistributions();
+    // t.testBoostDistributions();
+    t.testRayTrace("maps/wean.dat");
     return 0;
 }

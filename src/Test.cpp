@@ -5,13 +5,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <boost/math/distributions.hpp>
 
-#include <pf/RobotState.h>
-#include <pf/Constants.h>
-#include <pf/Utilities.h>
 #include <pf/Test.h>
-#include <pf/Map.h>
-#include <pf/Log.h>
-#include <pf/MotionModel.h>
 
 using namespace pf;
 
@@ -21,7 +15,6 @@ bool Test::testMap(std::string file_name)
     if (map.loadFromFile(file_name))
         {
             printf("Successfully loaded the map.\n");
-            // map.visualize();
             return true;
         }
     else
@@ -101,5 +94,18 @@ bool Test::testBoostDistributions()
     printf("Distribution with mean: %.2f and std: %.2f.\n", mean, std);
     printf("cdf at %.2f: %.6f.\n", query, boost::math::cdf(pdf, query));
     printf("pdf at %.2f: %.6f.\n", query, boost::math::pdf(pdf, query));
+    return true;
+}
+
+bool Test::testRayTrace(std::string map_file)
+{
+    MapPtr mapptr(new Map());
+    bool map_loaded = mapptr->loadFromFile(map_file);
+    if (!map_loaded)
+        return false;
+    Visualizer viz("test_ray_trace", mapptr);
+    RobotState test_state(400, 400, 0);
+    viz.showMap();
+    // viz.plotRayTrace(test_state);
     return true;
 }

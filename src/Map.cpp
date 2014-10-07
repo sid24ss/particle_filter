@@ -103,6 +103,10 @@ std::pair<size_t, size_t> Map::worldToGrid(double x, double y) const
         x_d--;
     if (y_d == dim_y_)
         y_d--;
+    // if (x_d == -1)
+    //     x_d++;
+    // if (y_d == -1)
+    //     y_d++;
     assert(x_d >= 0 && x_d < dim_x_ && y_d >=0 && y_d < dim_y_);
     return std::make_pair(x_d, y_d);
 }
@@ -124,9 +128,14 @@ std::pair<double, double> Map::gridToWorld(size_t x_d, size_t y_d) const
     return std::make_pair(x, y);
 }
 
+bool Map::withinRange(double x, double y)
+{
+    return (x >= 0 && x < dim_x_*resolution_
+        &&  y >= 0 && y < dim_y_*resolution_);
+}
+
 OccupancyGrid Map::getCroppedMap() const
 {
-    printf("visualizing map\n");
     OccupancyGrid data;
     // crop the map
     data.resize(map_max_[RobotDOF::X] - map_min_[RobotDOF::X] + 1);
@@ -173,7 +182,11 @@ double Map::getNominalReading(const RobotState& robot_state, double bearing)
         x = x0 + current_distance*std::cos(angle);
         y = y0 + current_distance*std::sin(angle);
         map_current_coords = worldToGrid(x, y);
-    } while (prob_[map_current_coords.first][map_current_coords.second] <
-        MapParams::WALL_THRESHOLD);
+    } while (
+        prob_[map_current_coords.first][map_current_coords.second] <
+                                                    MapParams::WALL_THRESHOLD
+    &&  prob_[map_current_coords.first][map_current_coords.second] != 
+                                    static_cast<double>(OccupancyState::UNKNOWN)
+    && withinRange(x, y));
     return current_distance;
 }

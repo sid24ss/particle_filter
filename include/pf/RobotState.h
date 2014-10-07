@@ -10,6 +10,7 @@ namespace pf {
     public:
         RobotState() : state_(3, 0) { }
         RobotState(std::vector<double> state) : state_(state) { }
+        RobotState(double x, double y, double theta);
         // set and get methods for x
         void x(double x) { state_[RobotDOF::X] = x; }
         double x() const { return state_[RobotDOF::X]; }

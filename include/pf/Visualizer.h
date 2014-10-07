@@ -16,7 +16,7 @@ namespace pf {
         Visualizer(std::string windowname, MapPtr map);
         void setWindowName(std::string name) { window_name_ = name; }
         void plotRayTrace(const RobotState& robot_state);
-
+        void showMap();
     private:
         MapPtr map_;
         std::string window_name_;

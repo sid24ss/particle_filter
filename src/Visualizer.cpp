@@ -25,8 +25,16 @@ Visualizer::Visualizer(std::string windowname,
 //     // cvWaitKey(0);
 // }
 
+void Visualizer::showMap()
+{
+    Mat current_image = image_->clone();
+    imshow(window_name_.c_str(), current_image);
+    waitKey(0);
+}
+
 void Visualizer::plotRayTrace(const RobotState& robot_state)
 {
+    Mat current_image = image_->clone();
     // get the map coordinates
     auto d_robot = map_->worldToGrid(robot_state.x(), robot_state.y());
     cv::Point robot(d_robot.first, d_robot.second);
@@ -43,7 +51,7 @@ void Visualizer::plotRayTrace(const RobotState& robot_state)
                             );
         auto d_new_coords = map_->worldToGrid(new_x, new_y);
         cv::Point range_point(d_new_coords.first, d_new_coords.second);
-        line(*image_, robot, range_point, cv::Scalar(0, 255, 255));
+        line(current_image, robot, range_point, cv::Scalar(0, 255, 255));
     }
-    imshow(window_name_, *image_);
+    imshow(window_name_.c_str(), current_image);
 }
