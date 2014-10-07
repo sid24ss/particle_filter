@@ -11,30 +11,41 @@ Visualizer::Visualizer(std::string windowname,
     // Initialize the internal image and start the window thread
     cv::startWindowThread();
     cv::namedWindow(window_name_.c_str(), WINDOW_AUTOSIZE);
-    OccupancyGrid grid = std::move(map_->getCroppedMap());
-    std::vector<double> data;
-    for (int j = static_cast<int>(grid[0].size()-1); j >=0; j--)
-        for (int i = 0; i < static_cast<int>(grid.size()); i++)
-            data.push_back(grid[i][j]);
-    image_.reset(new Mat(grid[0].size(), grid.size(), CV_64FC1, data.data()));
+    OccupancyGrid grid = map_->getMap();
+    // std::vector<double> data;
+    // for (int j = static_cast<int>(grid[0].size()-1); j >=0; j--) {
+    //     for (int i = 0; i < static_cast<int>(grid.size()); i++) {
+    //         data.push_back(grid[i][j]);
+    //     }
+    // }
+    // Mat tmp_mat(grid[0].size(), grid.size(), CV_64FC1, data.data());
+    map_img_ = cv::Mat(grid[0].size(), grid.size(), CV_8UC3);
+    for (int i = 0; i < static_cast<int>(grid.size()); i++) {
+        for (int j = 0; j < static_cast<int>(grid[0].size()); j++) {
+            if (grid[i][j] == -1) {
+                map_img_.at<Vec3b>(grid[0].size() - j - 1, i)[0] = 0;
+                map_img_.at<Vec3b>(grid[0].size() - j - 1, i)[1] = 0;
+                map_img_.at<Vec3b>(grid[0].size() - j - 1, i)[2] = 0;
+            } else {
+                map_img_.at<Vec3b>(grid[0].size() - j - 1, i)[0] = 255*grid[i][j];
+                map_img_.at<Vec3b>(grid[0].size() - j - 1, i)[1] = 255*grid[i][j];
+                map_img_.at<Vec3b>(grid[0].size() - j - 1, i)[2] = 255*grid[i][j];
+            }
+        }
+    }
 }
 
-// void Visualizer::visualizeArray(OccupancyGrid& grid)
-// {
-//     imshow(window_name_.c_str(), cv_matrix);
-//     // cvWaitKey(0);
-// }
 
 void Visualizer::showMap()
 {
-    Mat current_image = image_->clone();
-    imshow(window_name_.c_str(), current_image);
-    waitKey(0);
+    Mat current_image = map_img_.clone();
+    imshow(window_name_.c_str(), map_img_);
+    // waitKey(0);
 }
 
 void Visualizer::plotRayTrace(const RobotState& robot_state)
 {
-    Mat current_image = image_->clone();
+    Mat current_image = map_img_.clone();
     // get the map coordinates
     auto d_robot = map_->worldToGrid(robot_state.x(), robot_state.y());
     cv::Point robot(d_robot.first, d_robot.second);

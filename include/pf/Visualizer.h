@@ -20,7 +20,7 @@ namespace pf {
     private:
         MapPtr map_;
         std::string window_name_;
-        std::unique_ptr<cv::Mat> image_;
+        cv::Mat map_img_;
     };
     typedef std::shared_ptr<Visualizer> VizPtr;
 }

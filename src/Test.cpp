@@ -105,7 +105,8 @@ bool Test::testRayTrace(std::string map_file)
         return false;
     Visualizer viz("test_ray_trace", mapptr);
     RobotState test_state(400, 400, 0);
-    viz.showMap();
-    // viz.plotRayTrace(test_state);
+    // viz.showMap();
+    viz.plotRayTrace(test_state);
+    cv::waitKey(0);
     return true;
 }
