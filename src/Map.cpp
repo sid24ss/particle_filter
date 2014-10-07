@@ -175,6 +175,7 @@ double Map::getNominalReading(const RobotState& robot_state, double bearing)
 {
     // first, compute the actual direction in which we need to march.
     double angle = normalize_angle(robot_state.theta() + bearing);
+    // printf("marching along global angle : %f\n", RAD2DEG(angle));
     // from (x, y), we need to go along this angle until we hit a wall
     // The resolution of the map is resolution_
     // therefore, we need the values at the points
@@ -184,19 +185,21 @@ double Map::getNominalReading(const RobotState& robot_state, double bearing)
     double x0 = robot_state.x();
     double y0 = robot_state.y();
     // current coordinates in the world
-    double x, y;
+    double x = x0;
+    double y = y0;
     // current equivalent map coordinates
-    std::pair<size_t, size_t> map_current_coords;
+    std::pair<size_t, size_t> map_current_coords = worldToGrid(x, y);
+    // printf("(Initial prob : %f)\n", prob_[map_current_coords.first][map_current_coords.second]);
     do {
         current_distance += resolution_;
         x = x0 + current_distance*std::cos(angle);
         y = y0 + current_distance*std::sin(angle);
+        // printf("current x : %f, y : %f\n", x, y);
         map_current_coords = worldToGrid(x, y);
     } while (
-        prob_[map_current_coords.first][map_current_coords.second] <
-                                                    MapParams::WALL_THRESHOLD
-    &&  prob_[map_current_coords.first][map_current_coords.second] != 
-                                    static_cast<double>(OccupancyState::UNKNOWN)
+        // prob_[map_current_coords.first][map_current_coords.second] <
+        //                                             MapParams::WALL_THRESHOLD
+    prob_[map_current_coords.first][map_current_coords.second] >= 0.1
     && withinRange(x, y));
     return current_distance;
 }

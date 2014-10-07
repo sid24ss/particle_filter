@@ -20,8 +20,9 @@ namespace pf {
         std::pair <double, double> getSize() const;
         // loads the map from file
         bool loadFromFile(std::string file_name);
-        // visualize the map
+        // get the underlying occupancy grids
         OccupancyGrid getCroppedMap() const;
+        OccupancyGrid getMap() const { return prob_; };
         // convert the (x,y) of the world to the (x,y) of the grid.
         std::pair<size_t, size_t> worldToGrid(double x, double y) const;
         // convert the (x,y) of the grid to the (x,y) of the world.

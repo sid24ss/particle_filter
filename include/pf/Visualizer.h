@@ -16,11 +16,15 @@ namespace pf {
         Visualizer(std::string windowname, MapPtr map);
         void setWindowName(std::string name) { window_name_ = name; }
         void plotRayTrace(const RobotState& robot_state);
+        void visualizeRobotPose(cv::Mat& current_image, const RobotState& state);
+
         void showMap();
     private:
         MapPtr map_;
         std::string window_name_;
-        std::unique_ptr<cv::Mat> image_;
+        cv::Mat map_img_;
+        size_t dim_x_;
+        size_t dim_y_;
     };
     typedef std::shared_ptr<Visualizer> VizPtr;
 }
