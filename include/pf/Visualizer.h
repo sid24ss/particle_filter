@@ -2,15 +2,25 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <pf/Constants.h>
+#include <pf/Map.h>
 
 namespace pf {
     class Visualizer {
     public:
-        static void setWindowName(std::string name) { window_name_ = name; }
-        static void visualizeArray(OccupancyGrid& grid);
+        Visualizer(std::string windowname, MapPtr map);
+        void setWindowName(std::string name) { window_name_ = name; }
+        void plotRayTrace(const RobotState& robot_state);
+
     private:
-        static std::string window_name_;
+        MapPtr map_;
+        std::string window_name_;
+        std::unique_ptr<cv::Mat> image_;
     };
+    typedef std::shared_ptr<Visualizer> VizPtr;
 }

@@ -5,7 +5,6 @@
 #include <boost/progress.hpp>
 
 #include <pf/Map.h>
-#include <pf/Visualizer.h>
 #include <pf/Utilities.h>
 
 using namespace pf;
@@ -125,7 +124,7 @@ std::pair<double, double> Map::gridToWorld(size_t x_d, size_t y_d) const
     return std::make_pair(x, y);
 }
 
-void Map::visualize() const
+OccupancyGrid Map::getCroppedMap() const
 {
     printf("visualizing map\n");
     OccupancyGrid data;
@@ -137,7 +136,8 @@ void Map::visualize() const
             data[x-map_min_[RobotDOF::X]][y - map_min_[RobotDOF::Y]] = prob_[x][y];
         }
     }
-    Visualizer::visualizeArray(data);
+    return data;
+    // Visualizer::visualizeArray(data);
 }
 
 /**
@@ -174,6 +174,6 @@ double Map::getNominalReading(const RobotState& robot_state, double bearing)
         y = y0 + current_distance*std::sin(angle);
         map_current_coords = worldToGrid(x, y);
     } while (prob_[map_current_coords.first][map_current_coords.second] <
-        WALL_THRESHOLD);
+        MapParams::WALL_THRESHOLD);
     return current_distance;
 }

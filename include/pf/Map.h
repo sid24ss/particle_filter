@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <pf/Constants.h>
+#include <pf/RobotState.h>
 
 namespace pf {
     /**
@@ -20,7 +21,7 @@ namespace pf {
         // loads the map from file
         bool loadFromFile(std::string file_name);
         // visualize the map
-        void visualize() const;
+        OccupancyGrid getCroppedMap() const;
         // convert the (x,y) of the world to the (x,y) of the grid.
         std::pair<size_t, size_t> worldToGrid(double x, double y) const;
         // convert the (x,y) of the grid to the (x,y) of the world.

@@ -21,7 +21,7 @@ bool Test::testMap(std::string file_name)
     if (map.loadFromFile(file_name))
         {
             printf("Successfully loaded the map.\n");
-            map.visualize();
+            // map.visualize();
             return true;
         }
     else
