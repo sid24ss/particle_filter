@@ -1,10 +1,12 @@
 #include <cstdio>
 #include <cassert>
+#include <cmath>
 
 #include <boost/progress.hpp>
 
 #include <pf/Map.h>
 #include <pf/Visualizer.h>
+#include <pf/Utilities.h>
 
 using namespace pf;
 
@@ -136,4 +138,42 @@ void Map::visualize() const
         }
     }
     Visualizer::visualizeArray(data);
+}
+
+/**
+ * @brief does ray tracing
+ * @details Give a RobotState (that is, x, y, theta) and a bearing (the angle 
+ * of the lidar reading), we want to compute the nominal range where this ray
+ * meets the map. Note that the RobotState is in the world coordinates. That is,
+ * the (x,y) are real values, not cells.
+ * 
+ * @param robot_state the current pose
+ * @param bearing The laser bearing IN RADIANS
+ * 
+ * @return The nominal range where the ray hits the map
+ */
+double Map::getNominalReading(const RobotState& robot_state, double bearing)
+{
+    // first, compute the actual direction in which we need to march.
+    double angle = normalize_angle(robot_state.theta() + bearing);
+    // from (x, y), we need to go along this angle until we hit a wall
+    // The resolution of the map is resolution_
+    // therefore, we need the values at the points
+    // x + 5*cos(angle), y + 5*sin(angle)
+    // x + 15*cos(angle), y + 15*sin(angle), ...
+    double current_distance = 0.0;
+    double x0 = robot_state.x();
+    double y0 = robot_state.y();
+    // current coordinates in the world
+    double x, y;
+    // current equivalent map coordinates
+    std::pair<size_t, size_t> map_current_coords;
+    do {
+        current_distance += resolution_;
+        x = x0 + current_distance*std::cos(angle);
+        y = y0 + current_distance*std::sin(angle);
+        map_current_coords = worldToGrid(x, y);
+    } while (prob_[map_current_coords.first][map_current_coords.second] <
+        WALL_THRESHOLD);
+    return current_distance;
 }

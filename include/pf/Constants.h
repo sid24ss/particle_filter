@@ -38,4 +38,8 @@ namespace pf {
         const double max_range = 800.0;
         const double min_range = 0.0;
     }
+
+    namespace MapParams {
+        const double WALL_THRESHOLD = 0.9;
+    }
 }
