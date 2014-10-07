@@ -3,6 +3,7 @@
 #include <cmath>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <boost/math/distributions.hpp>
 
 #include <pf/RobotState.h>
 #include <pf/Constants.h>
@@ -89,4 +90,15 @@ bool Test::testLogGetter(std::string file_name)
         }
     }
     return true;
+}
+
+bool Test::testBoostDistributions()
+{
+    double mean = 0;
+    double std = 1;
+    double query = 0.5;
+    boost::math::normal_distribution<> pdf(mean, std);
+    printf("Distribution with mean: %.2f and std: %.2f.\n", mean, std);
+    printf("cdf at %.2f: %.6f.\n", query, boost::math::cdf(pdf, query));
+    printf("pdf at %.2f: %.6f.\n", query, boost::math::pdf(pdf, query));
 }

@@ -55,6 +55,7 @@ add_library(pf  SHARED  src/Map.cpp
                         src/Test.cpp
                         src/MotionModel.cpp
                         src/Particle.cpp
+                        src/SensorModel.cpp
                         )
 
 set_target_properties(pf PROPERTIES OUTPUT_NAME pf)

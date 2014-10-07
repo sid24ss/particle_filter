@@ -15,5 +15,6 @@ namespace pf{
         bool testLogReading(std::string file_name);
         bool testMotionModel(RobotState state_1, OdometryReading odom_1, OdometryReading odom_2);
         bool testLogGetter(std::string file_name);
+        bool testBoostDistributions();
     };
 };
