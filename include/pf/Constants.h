@@ -47,6 +47,9 @@ namespace pf {
     }
 
     namespace MapParams {
+        // TODO: tune these parameters
+
         const double WALL_THRESHOLD = 0.9;
+        const double FREE_THRESHOLD = 0;
     }
 }
