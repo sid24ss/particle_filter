@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <pf/Constants.h>
 
@@ -34,4 +35,5 @@ namespace pf {
         std::vector<size_t> map_min_;
         std::vector<size_t> map_max_;
     };
+    typedef std::shared_ptr<Map> MapPtr;
 }
