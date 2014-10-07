@@ -14,7 +14,8 @@ int main(int argc, char** argv)
 	MapPtr map(new Map("maps/wean.dat"));
 	ParticleFilter filter(map, "log/robotdata1.log", 2000);
 	filter.initialize();
-	filter.visualizeParticles();
-	cv::waitKey(0);
+        //filter.updateBelief();
+	filter.debugSensorModel();
+        cv::waitKey(0);
 	return 0;
 }

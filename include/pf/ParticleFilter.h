@@ -22,6 +22,7 @@ namespace pf {
         void calculateW(std::vector<double> data);
         void resample();
         void visualizeParticles();
+        void debugSensorModel();
     private:
         MapPtr map_;
         Log log_;

@@ -54,10 +54,10 @@ bool Test::testLogReading(std::string file_name)
     return true;
 }
 
-bool Test::testMotionModel(RobotState state_1, OdometryReading odom_1, OdometryReading odom_2)
+bool Test::testMotionModel(RobotState state_1, OdometryReading odom_1, OdometryReading odom_2, MapPtr map_ptr)
 {
     RobotState state_2;
-    MotionModel model = MotionModel();
+    MotionModel model = MotionModel(map_ptr);
     cv::Mat image =  cv::Mat::zeros( 400, 400, CV_8UC3 );
     cv::circle(image, cv::Point(state_1.x(), state_1.y()), 2, cv::Scalar(0, 0, 255), -1, 8);
     for (int i = 0; i < 50; ++i) {
@@ -106,7 +106,7 @@ bool Test::testRayTrace(std::string map_file)
     if (!map_loaded)
         return false;
     Visualizer viz("test_ray_trace", mapptr);
-    RobotState test_state(3900, 4000, DEG2RAD(-179));
+    RobotState test_state(4500, 4000, DEG2RAD(85));
     // viz.showMap();
     std::vector<double> test_bearings(180,0);
     std::iota(test_bearings.begin(), test_bearings.end(), -90);
@@ -114,5 +114,10 @@ bool Test::testRayTrace(std::string map_file)
                                     {val = DEG2RAD(val); });
     viz.plotRayTrace(test_state, test_bearings);
     cv::waitKey(0);
+    return true;
+}
+
+bool Test::testSensorModel()
+{
     return true;
 }

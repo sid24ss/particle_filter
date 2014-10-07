@@ -5,9 +5,10 @@
 
 using namespace pf;
 
-MotionModel::MotionModel() :     
+MotionModel::MotionModel(MapPtr map_ptr) :     
     distribution_(0.0, 1.0), 
-    generator_( (unsigned int)time(0)) {}
+    generator_( (unsigned int)time(0)),
+    map_(map_ptr) {}
 
 RobotState MotionModel::sampleNextState(const RobotState& state_1, const OdometryReading& odom_1, const OdometryReading& odom_2)
 {
@@ -32,5 +33,10 @@ RobotState MotionModel::sampleNextState(const RobotState& state_1, const Odometr
     state_2.y(state_1.y() + d_s*sin(state_1.theta() + d_th_1));
     state_2.theta(normalize_angle(state_1.theta() + d_th_1 + d_th_2));
 
+    if (!map_->isFree(state_2.x(), state_2.y())) {
+        state_2.x(state_1.x());
+        state_2.y(state_1.y());
+        state_2.theta(state_2.theta());
+    }
     return state_2;
 }

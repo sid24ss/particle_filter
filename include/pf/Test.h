@@ -19,9 +19,10 @@ namespace pf{
         bool testATan2(double y, double x);
         bool testShortestAngularDistance(double th_1, double th_2);
         bool testLogReading(std::string file_name);
-        bool testMotionModel(RobotState state_1, OdometryReading odom_1, OdometryReading odom_2);
+        bool testMotionModel(RobotState state_1, OdometryReading odom_1, OdometryReading odom_2, MapPtr map_ptr);
         bool testLogGetter(std::string file_name);
         bool testBoostDistributions();
         bool testRayTrace(std::string map_name);
+        bool testSensorModel();
     };
 };

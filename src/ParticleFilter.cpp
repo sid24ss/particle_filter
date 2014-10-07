@@ -13,7 +13,7 @@ ParticleFilter::ParticleFilter(MapPtr map_ptr,
     map_(map_ptr),
     log_(log_file_name),
     num_particles_(num_particles),
-    motion_model_(),
+    motion_model_(map_),
     sensor_model_(map_),
     resampler_(new VanillaResampler()),
     viz_("particle_filter", map_ptr)
@@ -54,6 +54,7 @@ void ParticleFilter::updateBelief() {
         // we always need the odometry
         odom_current = current_reading.robot_in_odom;
 
+        visualizeParticles();
         // first time we run, we have no previous odometry measurements.
         // we must propagate.
         if (first_time) {
@@ -63,13 +64,24 @@ void ParticleFilter::updateBelief() {
         }
 
         propagate(odom_previous, odom_current);
+        visualizeParticles();
         if (current_reading.is_laser) {
             calculateW(current_reading.scan_data);
             resample();
         }        
+        visualizeParticles();
         odom_previous = odom_current;
     }
+}
 
+void ParticleFilter::debugSensorModel() {
+    SensorReading reading;
+    while (true) {
+        reading = log_.getNextReading();
+        if(reading.is_laser)
+            break;
+    }
+    calculateW(reading.scan_data);
 }
 
 /**
@@ -100,6 +112,7 @@ void ParticleFilter::calculateW(std::vector<double> scan_data)
 {
     for (size_t i = 0; i < particles_.size(); ++i) {
         weights_[i] = sensor_model_.calculateWeight(scan_data, particles_[i]);
+        printf("i: %d, weight: %.4f\n", i, weights_[i]);
     }
 }
 
