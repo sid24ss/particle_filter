@@ -21,6 +21,8 @@ namespace pf {
         MapPtr map_;
         std::string window_name_;
         cv::Mat map_img_;
+        size_t dim_x_;
+        size_t dim_y_;
     };
     typedef std::shared_ptr<Visualizer> VizPtr;
 }
