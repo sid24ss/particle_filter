@@ -12,13 +12,7 @@ Visualizer::Visualizer(std::string windowname,
     cv::startWindowThread();
     cv::namedWindow(window_name_.c_str(), WINDOW_AUTOSIZE);
     OccupancyGrid grid = map_->getMap();
-    // std::vector<double> data;
-    // for (int j = static_cast<int>(grid[0].size()-1); j >=0; j--) {
-    //     for (int i = 0; i < static_cast<int>(grid.size()); i++) {
-    //         data.push_back(grid[i][j]);
-    //     }
-    // }
-    // Mat tmp_mat(grid[0].size(), grid.size(), CV_64FC1, data.data());
+
     dim_x_ = grid.size();
     dim_y_ = grid[0].size();
     map_img_ = cv::Mat(dim_y_, dim_x_, CV_8UC3);
@@ -48,6 +42,7 @@ void Visualizer::showMap()
 void Visualizer::plotRayTrace(const RobotState& robot_state)
 {
     Mat current_image = map_img_.clone();
+    visualizeRobotPose(current_image, robot_state);
     // get the map coordinates
     auto d_robot = map_->worldToGrid(robot_state.x(), robot_state.y());
     cv::Point robot(d_robot.first, dim_y_ - d_robot.second);
@@ -64,7 +59,14 @@ void Visualizer::plotRayTrace(const RobotState& robot_state)
                             );
         auto d_new_coords = map_->worldToGrid(new_x, new_y);
         cv::Point range_point(d_new_coords.first, dim_y_ - d_new_coords.second);
-        line(current_image, robot, range_point, cv::Scalar(0, 255, 255));
+        line(current_image, robot, range_point, cv::Scalar(0, 255, 0));
     }
     imshow(window_name_.c_str(), current_image);
+}
+
+void Visualizer::visualizeRobotPose(Mat& current_image, const RobotState& state)
+{
+    auto d_robot = map_->worldToGrid(state.x(), state.y());
+    circle(current_image, Point(d_robot.first, dim_y_ - d_robot.second), 5, 
+        Scalar(0, 0, 255));
 }
