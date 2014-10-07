@@ -7,13 +7,15 @@ namespace pf {
     class SensorModel {
     public:
         SensorModel(MapPtr map);
-        double probMeasurementAtPose(double measurement, RobotState state);
+        double calculateWeight(std::vector<double> ranges, RobotState state);
+        double probMeasurementAtPose(double measurement, double bearing, RobotState state);
         double probMeasurement(double measurement, double nominal_range);
+        // snap ranges greater than max_range to max_range
+        void filterRanges(std::vector<double>& ranges);
+        std::vector<double> undersampleData(std::vector<double> data);
     private:
         // map can be set only once
         MapPtr map_;
-        // double variance_scaling_;
-        // double max_range_;
-        // double min_range_;
+        std::vector<double> bearings;
     };
 };
