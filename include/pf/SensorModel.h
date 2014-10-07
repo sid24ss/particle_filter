@@ -6,14 +6,14 @@
 namespace pf {
     class SensorModel {
     public:
-        SensorModel(Map map);
+        SensorModel(MapPtr map);
         double probMeasurementAtPose(double measurement, RobotState state);
         double probMeasurement(double measurement, double nominal_range);
     private:
         // map can be set only once
-        Map map_;
-        double K_;
-        double max_range_;
-        double min_range_;
+        MapPtr map_;
+        // double variance_scaling_;
+        // double max_range_;
+        // double min_range_;
     };
 };

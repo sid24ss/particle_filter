@@ -101,4 +101,5 @@ bool Test::testBoostDistributions()
     printf("Distribution with mean: %.2f and std: %.2f.\n", mean, std);
     printf("cdf at %.2f: %.6f.\n", query, boost::math::cdf(pdf, query));
     printf("pdf at %.2f: %.6f.\n", query, boost::math::pdf(pdf, query));
+    return true;
 }

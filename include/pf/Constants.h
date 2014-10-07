@@ -32,4 +32,10 @@ namespace pf {
         static constexpr double alpha_3 = 1.0/30.0;
         static constexpr double alpha_4 = 0.0;
     };
+
+    namespace SensorModelParams {
+        const double variance_scaling = 0.01;
+        const double max_range = 800.0;
+        const double min_range = 0.0;
+    }
 }

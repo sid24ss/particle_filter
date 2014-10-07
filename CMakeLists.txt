@@ -63,7 +63,7 @@ set_target_properties(pf PROPERTIES OUTPUT_NAME pf)
 target_link_libraries(pf ${PF_LIBRARIES})
 
 # Add files here to make executables out of them
-add_executable(test src/test.cpp)
+add_executable(test src/run_tests.cpp)
 target_link_libraries(test pf ${PF_LIBRARIES})
 
 # add_subdirectory( src )
