@@ -68,6 +68,9 @@ target_link_libraries(pf ${PF_LIBRARIES})
 add_executable(test src/run_tests.cpp)
 target_link_libraries(test pf ${PF_LIBRARIES})
 
+add_executable(run_filter src/run_filter.cpp)
+target_link_libraries(run_filter pf ${PF_LIBRARIES})
+
 # add_subdirectory( src )
 
 # add_subdirectory( app )

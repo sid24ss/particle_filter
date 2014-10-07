@@ -14,6 +14,13 @@ Map::Map() :
     map_max_(2,0)
 {}
 
+Map::Map(std::string file_name) :
+    map_min_(2,0),
+    map_max_(2,0)
+{
+    loadFromFile(file_name);
+}
+
 bool Map::loadFromFile(std::string file_name)
 {
     FILE* fin = fopen(file_name.c_str(), "r");

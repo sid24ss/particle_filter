@@ -14,6 +14,7 @@ namespace pf {
     class Map {
     public:
         Map();
+        Map(std::string file_name);
         // returns the dimensions of the cells underneath.
         std::pair <size_t, size_t> getDims() const;
         // returns the size of the map (dim * resolution)

@@ -66,8 +66,16 @@ void Visualizer::plotRayTrace(const RobotState& robot_state, std::vector<double>
 void Visualizer::visualizeRobotPose(Mat& current_image, const RobotState& state)
 {
     auto d_robot = map_->worldToGrid(state.x(), state.y());
-    int radius = 2;
+    int radius = 1;
     int thickness = -1;
     circle(current_image, Point(d_robot.first, dim_y_ - d_robot.second), radius, 
         Scalar(0, 0, 255), thickness);
+}
+
+void Visualizer::visualizePoses(const std::vector<RobotState>& robot_states)
+{
+    Mat current_image = map_img_.clone();
+    for (auto& pose : robot_states)
+        visualizeRobotPose(current_image, pose);
+    imshow(window_name_.c_str(), current_image);
 }

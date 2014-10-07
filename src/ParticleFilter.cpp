@@ -8,14 +8,15 @@
 using namespace pf;
 
 ParticleFilter::ParticleFilter(MapPtr map_ptr,
-                               std::string file_name,
+                               std::string log_file_name,
                                size_t num_particles) : 
     map_(map_ptr),
-    log_(file_name),
+    log_(log_file_name),
     num_particles_(num_particles),
     motion_model_(),
     sensor_model_(map_),
-    resampler_(new VanillaResampler())
+    resampler_(new VanillaResampler()),
+    viz_("particle_filter", map_ptr)
 { }
 
 void ParticleFilter::initialize()
@@ -112,4 +113,9 @@ void ParticleFilter::resample()
         }
     );
     particles_ = std::move(new_particles);
+}
+
+void ParticleFilter::visualizeParticles()
+{
+    viz_.visualizePoses(particles_);
 }

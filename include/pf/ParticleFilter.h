@@ -9,18 +9,19 @@
 #include <pf/Map.h>
 #include <pf/Particle.h>
 #include <pf/Log.h>
+#include <pf/Visualizer.h>
 
 namespace pf {
     class ParticleFilter
     {
     public:
         ParticleFilter(MapPtr map_ptr, std::string file_name, size_t num_particles);
-        ~ParticleFilter();
         void initialize();
         void updateBelief();
         void propagate(OdometryReading odom_1, OdometryReading odom_2);
         void calculateW(std::vector<double> data);
         void resample();
+        void visualizeParticles();
     private:
         MapPtr map_;
         Log log_;
@@ -30,5 +31,6 @@ namespace pf {
         MotionModel motion_model_;
         SensorModel sensor_model_;
         std::unique_ptr<Resampler> resampler_;
+        Visualizer viz_;
     };
 }
