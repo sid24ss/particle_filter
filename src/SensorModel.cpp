@@ -32,8 +32,10 @@ double SensorModel::probMeasurementAtPose(double measurement, double bearing, Ro
     double prob;
     double prob_gaussian = probGaussian(measurement, nominal_range);
     double prob_uniform = probUniform();
-    prob = SensorModelParams::mix_factor*prob_gaussian +
-            (1 - SensorModelParams::mix_factor)*prob_uniform;
+    prob = SensorModelParams::ZHIT  *   probGaussian(measurement, nominal_range)
+        +  SensorModelParams::ZNOISE*   probUniform()
+        +  SensorModelParams::ZSHORT*   probDecaying(measurement, nominal_range)
+        +  SensorModelParams::ZMAX  *   probMaxNoise(measurement);
     // printf("nominal_range : %f;\t measurement : %f;\t prob : %f\n", nominal_range, measurement,
         // prob);
     return prob;
@@ -69,6 +71,11 @@ double SensorModel::probUniform()
 {
     return 0.2;
     // return 1.0/(SensorModelParams::max_range - SensorModelParams::min_range);
+}
+
+double SensorModel::probMaxNoise(double measurement)
+{
+    return static_cast<double>(measurement == SensorModelParams::max_range);
 }
 
 void SensorModel::filterRanges(std::vector<double>& ranges)

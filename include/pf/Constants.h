@@ -48,7 +48,11 @@ namespace pf {
         }
         const double skip = 5;
 
-        const double mix_factor = 0.5;
+        const double SHORT_NOISE_LAMBDA = 0.0005;
+        const double ZHIT = 0.8;
+        const double ZNOISE = 0.1;
+        const double ZSHORT = 0.095;
+        const double ZMAX = 0.005;
     }
 
     namespace MapParams {
