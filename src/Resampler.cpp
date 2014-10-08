@@ -53,3 +53,40 @@ std::vector<size_t> VanillaResampler::resample(std::vector<double>& weights)
     // printf("\n");
     return idx;
 }
+
+LowVarianceResampler::LowVarianceResampler()
+{
+    distribution_ = std::uniform_real_distribution<double>(0.0, 1);
+}
+
+std::vector<size_t> LowVarianceResampler::resample(std::vector<double>& weights)
+{
+    normalizeData(weights);
+    std::vector<double> cumsum(weights.size() + 1, 0);
+    for (size_t i = 0; i < weights.size(); i++) {
+        cumsum[i+1] = cumsum[i] + weights[i];
+    }
+    // printf("cumsum\n");
+    // std::for_each(cumsum.begin(), cumsum.end(), [](double val){
+    //     printf("%f ", val);
+    // });
+    // printf("\n");
+    double r = distribution_(generator_);
+    std::vector<size_t> idx;
+    for (size_t i = 0; i < weights.size(); i++){
+        // double sample = r + static_cast<double>(i/weights.size());
+        double sample = r + static_cast<double>(i);
+        size_t j = 0;
+        while(cumsum[j]*static_cast<double>(weights.size()) <= sample && j <weights.size())
+            j++;
+        if (j == weights.size())
+            j = 1;
+        idx.push_back(j-1);
+    }
+    // printf("idx\n");
+    // std::for_each(idx.begin(), idx.end(), [](double val){
+    //     printf("%f ", val);
+    // });
+    // printf("\n");
+    return idx;
+}

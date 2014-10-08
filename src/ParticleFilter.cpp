@@ -25,7 +25,7 @@ ParticleFilter::ParticleFilter(FilterParams params) :
     num_particles_(params.num_particles),
     motion_model_(map_),
     sensor_model_(map_),
-    resampler_(new VanillaResampler()),
+    resampler_(new LowVarianceResampler()),
     viz_("particle_filter", map_)
 { }
 
@@ -85,9 +85,8 @@ void ParticleFilter::updateBelief() {
             // find most likely state
             size_t max_idx = std::max_element(log_weights_.begin(),
                 log_weights_.end()) - log_weights_.begin();
-            // viz_.plotRayTrace(particles_[max_idx], SensorModelParams::getBearings());
-            viz_.visualizeScan(particles_[max_idx],
-                SensorModel::undersampleData(current_reading.scan_data));
+            viz_.plotRayTrace(particles_[max_idx], SensorModel::undersampleData(SensorModelParams::getBearings()));
+            viz_.visualizeScan(particles_[max_idx], current_reading.scan_data);
         } else {
             has_moved = propagate(odom_previous, odom_current);
             visualizeParticles();
@@ -117,7 +116,16 @@ void ParticleFilter::debugSensorModel() {
             break;
     }
     calculateW(reading.scan_data);
+    for (auto log_weight : log_weights_) {
+      printf("%.3f ", std::exp(log_weight));
+    }
+    printf("\n");
     resample();
+    for (auto weight : weights_) {
+      printf("%.3f ", weight);
+    }
+    printf("\n");
+    visualizeParticles();
 }
 
 /**
@@ -158,7 +166,7 @@ void ParticleFilter::resample()
     weights_.resize(log_weights_.size());
     for (size_t i = 0; i < log_weights_.size(); ++i)
         weights_[i] = std::exp(log_weights_[i]);
-    if (compute_particle_variance() > SamplerParams::VARIANCE_THRESHOLD){
+    if (compute_particle_variance() >= SamplerParams::VARIANCE_THRESHOLD){
         std::vector<size_t> idx = std::move(resampler_->resample(weights_));
         std::vector<RobotState> new_particles;
         std::for_each(idx.begin(), idx.end(),
@@ -180,10 +188,10 @@ void ParticleFilter::visualizeParticles()
 double ParticleFilter::compute_particle_variance()
 {
     // compute the variance over the weights
-    accumulator_set<double, stats<tag::variance> > acc;
+    accumulators::accumulator_set<double, accumulators:: stats<accumulators::tag::variance> > acc;
     for_each(weights_.begin(), weights_.end(), bind<void>(ref(acc), _1));
 
     // cout << mean(acc) << endl;
     // cout << (variance(acc)) << endl;
-    return variance(acc);
+    return accumulators::variance(acc);
 }

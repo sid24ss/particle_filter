@@ -23,6 +23,6 @@ int main () {
         printf("motion model test failed\n");
     */
     // t.testBoostDistributions();
-    // t.testRayTrace("maps/wean.dat");
+    t.testRayTrace("maps/wean.dat");
     return 0;
 }

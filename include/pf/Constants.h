@@ -46,26 +46,26 @@ namespace pf {
             });
             return bearings;
         }
-        const double skip = 10;
+        const double skip = 5;
 
         const double HIT_SIGMA = 20;
         const double SHORT_NOISE_LAMBDA = 0.0005;
-        const double ZHIT = 0.8;
-        const double ZNOISE = 0.1;
-        const double ZSHORT = 0.095;
-        const double ZMAX = 0.005;
+        const double ZHIT = 0.8; //0.8
+        const double ZNOISE = 10; //0.2
+        const double ZSHORT = 0.0; //0.095;
+        const double ZMAX = 0.0; //0.005;
     }
 
     namespace MapParams {
         // TODO: tune these parameters
         // Note : The Map is occupied if the prob_ value is 0
         // unoccupied if prob_ value is 1
-        const double WALL_TOL = 0.1;
+        const double WALL_TOL = 0.95;
         const double FREE_TOL = 0.001;
     }
 
     namespace SamplerParams {
-        const double VARIANCE_THRESHOLD = 1e-08;
+        const double VARIANCE_THRESHOLD = 0e-08;
     }
 
     struct FilterParams{

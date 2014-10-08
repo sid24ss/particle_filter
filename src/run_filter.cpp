@@ -15,14 +15,14 @@ int main(int argc, char** argv)
     FilterParams params;
     params.map_file = std::string("maps/wean.dat");
     params.log_file = std::string("log/robotdata1.log");
-    params.num_particles = 3000;
+    params.num_particles = 10000;
     params.record_video = false;
 	ParticleFilter filter(params);
     filter.initialize();
     filter.visualizeParticles();
     std::cin.get();
 	// filter.debugParticles();
-	// filter.debugSensorModel();
+    // filter.debugSensorModel();
     filter.updateBelief();
     cv::waitKey(0);
 	return 0;

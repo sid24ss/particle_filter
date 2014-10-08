@@ -36,8 +36,8 @@ double SensorModel::probMeasurementAtPose(double measurement, double bearing, Ro
         +  SensorModelParams::ZNOISE*   probUniform()
         +  SensorModelParams::ZSHORT*   probDecaying(measurement, nominal_range)
         +  SensorModelParams::ZMAX  *   probMaxNoise(measurement);
-    // printf("nominal_range : %f;\t measurement : %f;\t prob : %f\n", nominal_range, measurement,
-        // prob);
+    // printf("nominal_range : %f;\t measurement : %f;\t probGaussian : %f;\t prob: %f\n", nominal_range, measurement,
+    //     probGaussian(measurement, nominal_range), prob);
     assert(prob != 0.0);
     return prob;
 }

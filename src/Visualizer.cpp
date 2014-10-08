@@ -117,7 +117,7 @@ void Visualizer::visualizeScan(const RobotState& robot_state,
                             );
         auto d_new_coords = map_->worldToGrid(new_x, new_y);
         cv::Point range_point(d_new_coords.first, dim_y_-1 - d_new_coords.second);
-        line(current_image_, robot_d, range_point, cv::Scalar(0, 255, 0));
+        line(current_image_, robot_d, range_point, cv::Scalar(0, 0, 255));
     }
     imshow(window_name_.c_str(), current_image_);
 }

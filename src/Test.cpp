@@ -110,13 +110,10 @@ bool Test::testRayTrace(std::string map_file)
     if (!map_loaded)
         return false;
     Visualizer viz("test_ray_trace", mapptr);
-    RobotState test_state(4500, 4000, DEG2RAD(85));
+    RobotState test_state(5500, 6000, DEG2RAD(-110));
     // viz.showMap();
-    std::vector<double> test_bearings(180,0);
-    std::iota(test_bearings.begin(), test_bearings.end(), -90);
-    std::for_each(test_bearings.begin(), test_bearings.end(), [](double& val)
-                                    {val = DEG2RAD(val); });
-    viz.plotRayTrace(test_state, test_bearings);
+    
+    viz.plotRayTrace(test_state, SensorModelParams::getBearings());
     cv::waitKey(0);
     return true;
 }
