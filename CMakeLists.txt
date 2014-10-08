@@ -52,12 +52,12 @@ add_library(pf  SHARED  src/Map.cpp
                         src/Visualizer.cpp
                         src/Log.cpp
                         src/RobotState.cpp
-                        src/Test.cpp
                         src/MotionModel.cpp
                         src/Particle.cpp
                         src/SensorModel.cpp
                         src/ParticleFilter.cpp
                         src/Resampler.cpp
+                        src/Test.cpp
                     )
 
 set_target_properties(pf PROPERTIES OUTPUT_NAME pf)

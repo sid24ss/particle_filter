@@ -74,8 +74,36 @@ void Visualizer::visualizeRobotPose(Mat& current_image, const RobotState& state)
 
 void Visualizer::visualizePoses(const std::vector<RobotState>& robot_states)
 {
-    Mat current_image = map_img_.clone();
+    // TODO : Make a generic image clearer
+    current_image_ = map_img_.clone();
     for (auto& pose : robot_states)
-        visualizeRobotPose(current_image, pose);
-    imshow(window_name_.c_str(), current_image);
+        visualizeRobotPose(current_image_, pose);
+    imshow(window_name_.c_str(), current_image_);
+}
+
+void Visualizer::visualizeScan(const RobotState& robot_state, 
+                            const std::vector<double> scan_data)
+{
+    // TODO : save current_image_ as part of the class
+    visualizeRobotPose(current_image_, robot_state);
+    // get the map coordinates
+    // auto d_robot = map_->worldToGrid(robot_state.x(), robot_state.y());
+    auto laser_coords = robot_state.getLaserCoords();
+    auto d_laser = map_->worldToGrid(laser_coords[RobotDOF::X], laser_coords[
+        RobotDOF::Y]);
+    cv::Point robot(d_laser.first, dim_y_ - d_laser.second);
+    auto bearings = SensorModelParams::getBearings();
+    for (size_t i = 0; i < bearings.size(); i++) {
+        // convert this to a line and plot
+        double new_x = laser_coords[RobotDOF::X] + scan_data[i]*std::cos(
+                                normalize_angle(laser_coords[RobotDOF::THETA] + bearings[i])
+                            );
+        double new_y = laser_coords[RobotDOF::Y] + scan_data[i]*std::sin(
+                                normalize_angle(laser_coords[RobotDOF::THETA] + bearings[i])
+                            );
+        auto d_new_coords = map_->worldToGrid(new_x, new_y);
+        cv::Point range_point(d_new_coords.first, dim_y_ - d_new_coords.second);
+        line(current_image_, robot, range_point, cv::Scalar(0, 255, 0));
+    }
+    imshow(window_name_.c_str(), current_image_);
 }

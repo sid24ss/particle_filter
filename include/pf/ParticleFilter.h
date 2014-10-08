@@ -23,11 +23,13 @@ namespace pf {
         void resample();
         void visualizeParticles();
         void debugSensorModel();
+        void debugParticles();
     private:
         MapPtr map_;
         Log log_;
         std::vector<RobotState> particles_;
         std::vector<double> weights_;
+        std::vector<double> log_weights_;
         size_t num_particles_;
         MotionModel motion_model_;
         SensorModel sensor_model_;

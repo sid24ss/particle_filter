@@ -114,7 +114,7 @@ std::pair<size_t, size_t> Map::worldToGrid(double x, double y) const
     //     x_d++;
     // if (y_d == -1)
     //     y_d++;
-    assert(x_d >= 0 && x_d < dim_x_ && y_d >=0 && y_d < dim_y_);
+    // assert(x_d >= 0 && x_d < dim_x_ && y_d >=0 && y_d < dim_y_);
     return std::make_pair(x_d, y_d);
 }
 
@@ -148,6 +148,7 @@ bool Map::isFree(double x, double y)
         prob_[coords.first][coords.second] <= static_cast<double>(OccupancyState::FREE) &&
         prob_[coords.first][coords.second] >= static_cast<double>(OccupancyState::FREE) - MapParams::FREE_TOL)
     {
+        assert(prob_[coords.first][coords.second] != -1);
         return true;
     }
     return false;
@@ -182,33 +183,40 @@ OccupancyGrid Map::getCroppedMap() const
  */
 double Map::getNominalReading(const RobotState& robot_state, double bearing)
 {
+    std::vector<double> laser_state = robot_state.getLaserCoords();
     // first, compute the actual direction in which we need to march.
-    double angle = normalize_angle(robot_state.theta() + bearing);
-    // printf("marching along global angle : %f\n", RAD2DEG(angle));
+    double angle = normalize_angle(laser_state[RobotDOF::THETA] + bearing);
     // from (x, y), we need to go along this angle until we hit a wall
     // The resolution of the map is resolution_
     // therefore, we need the values at the points
     // x + 5*cos(angle), y + 5*sin(angle)
     // x + 15*cos(angle), y + 15*sin(angle), ...
     double current_distance = 0.0;
-    double x0 = robot_state.x();
-    double y0 = robot_state.y();
+    double x0 = laser_state[RobotDOF::X];
+    double y0 = laser_state[RobotDOF::Y];
+    // printf("marching along %f %f and global angle : %f\n", x0, y0, RAD2DEG(angle));
     // current coordinates in the world
     double x = x0;
     double y = y0;
     // current equivalent map coordinates
     std::pair<size_t, size_t> map_current_coords = worldToGrid(x, y);
     // printf("(Initial prob : %f)\n", prob_[map_current_coords.first][map_current_coords.second]);
-    do {
-        current_distance += resolution_;
+    while (prob_[map_current_coords.first][map_current_coords.second] >= 
+        static_cast<double>(OccupancyState::OCCUPIED) + MapParams::WALL_TOL)
+    {
+        current_distance += 0.5*resolution_;
         x = x0 + current_distance*std::cos(angle);
         y = y0 + current_distance*std::sin(angle);
         // printf("current x : %f, y : %f\n", x, y);
+        if(!withinRange(x, y))
+            break;
         map_current_coords = worldToGrid(x, y);
-    } while (
-        prob_[map_current_coords.first][map_current_coords.second] >= 
-        static_cast<double>(OccupancyState::OCCUPIED) + MapParams::WALL_TOL
-        && withinRange(x, y)
-    );
+    }
+    // do {
+    // } while (
+    //     prob_[map_current_coords.first][map_current_coords.second] >= 
+    //     static_cast<double>(OccupancyState::OCCUPIED) + MapParams::WALL_TOL
+    //     && withinRange(x, y)
+    // );
     return current_distance;
 }

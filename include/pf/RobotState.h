@@ -9,7 +9,8 @@ namespace pf {
     class RobotState {
     public:
         RobotState() : state_(3, 0) { }
-        RobotState(std::vector<double> state) : state_(state) { }
+        RobotState(const RobotState& other);
+        RobotState(std::vector<double> state);
         RobotState(double x, double y, double theta);
         // set and get methods for x
         void x(double x) { state_[RobotDOF::X] = x; }
@@ -23,6 +24,10 @@ namespace pf {
         // set and get methods for pose
         void state(std::vector<double> state);
         std::vector<double> state() const { return state_; }
+
+        std::vector<double> getLaserCoords() const;
+
+        void print();
     private:
         std::vector<double> state_;
     };

@@ -107,6 +107,7 @@ bool Log::loadFromFile(std::string file_name)
     printf("Read : %lu odom_readings and %lu laser_readings\n",
                                             num_odom_readings,
                                             num_laser_readings);
+    total_readings_ = num_laser_readings + num_odom_readings;
     return true;
 }
 

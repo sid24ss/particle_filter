@@ -7,9 +7,10 @@ namespace pf {
     class SensorModel {
     public:
         SensorModel(MapPtr map);
-        double calculateWeight(std::vector<double> ranges, RobotState state);
+        double calculateLogWeight(std::vector<double> ranges, RobotState state);
         double probMeasurementAtPose(double measurement, double bearing, RobotState state);
-        double probMeasurement(double measurement, double nominal_range);
+        double probGaussian(double measurement, double nominal_range);
+        double probUniform();
         // snap ranges greater than max_range to max_range
         void filterRanges(std::vector<double>& ranges);
         std::vector<double> undersampleData(std::vector<double> data);

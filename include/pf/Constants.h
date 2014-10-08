@@ -35,15 +35,20 @@ namespace pf {
     };
 
     namespace SensorModelParams {
-        const double variance_scaling = 0.01;
-        const double max_range = 1500.0;
+        const double variance_scaling = 0.20;
+        const double max_range = 8163.0;
         const double min_range = 0.0;
         inline std::vector<double> getBearings() {
             std::vector<double> bearings(180,0);
             std::iota(bearings.begin(), bearings.end(), -90);
+            std::for_each(bearings.begin(), bearings.end(), [](double& val){
+                val = DEG2RAD(val);
+            });
             return bearings;
         }
         const double skip = 5;
+
+        const double mix_factor = 0.5;
     }
 
     namespace MapParams {

@@ -2,6 +2,8 @@
 #include <random>
 #include <chrono>
 
+#include <boost/progress.hpp>
+
 #include <pf/ParticleFilter.h>
 #include <pf/Log.h>
 
@@ -12,6 +14,9 @@ ParticleFilter::ParticleFilter(MapPtr map_ptr,
                                size_t num_particles) : 
     map_(map_ptr),
     log_(log_file_name),
+    particles_(num_particles),
+    weights_(num_particles, 0),
+    log_weights_(num_particles, 0),
     num_particles_(num_particles),
     motion_model_(map_),
     sensor_model_(map_),
@@ -35,7 +40,7 @@ void ParticleFilter::initialize()
         y = y_distribution(generator);
         theta = theta_distribution(generator);
         if (map_->isFree(x, y)) {
-            particles_.push_back(RobotState(x, y, theta));
+            particles_[count] = RobotState(x, y, theta);
             count = count+1;
         }
     }
@@ -47,6 +52,8 @@ void ParticleFilter::updateBelief() {
     SensorReading current_reading;
 
     bool first_time = true;
+    boost::progress_display show_progress(log_.totalReadings());
+    visualizeParticles();
     while (!log_.isEmpty()) {
     // while we still have sensor readings
         // get the next reading
@@ -54,23 +61,43 @@ void ParticleFilter::updateBelief() {
         // we always need the odometry
         odom_current = current_reading.robot_in_odom;
 
-        visualizeParticles();
         // first time we run, we have no previous odometry measurements.
         // we must propagate.
         if (first_time) {
             odom_previous = odom_current;
             first_time = false;
-            continue;
+            if (!current_reading.is_laser)
+                continue;
         }
 
         propagate(odom_previous, odom_current);
-        visualizeParticles();
+        // visualizeParticles();
         if (current_reading.is_laser) {
             calculateW(current_reading.scan_data);
             resample();
         }        
-        visualizeParticles();
         odom_previous = odom_current;
+        ++show_progress;
+        printf("waiting for keyboard input\n");
+        std::cin.get();
+        visualizeParticles();
+        if (current_reading.is_laser){
+            // find most likely state
+            size_t max_idx = std::max_element(log_weights_.begin(),
+                log_weights_.end()) - log_weights_.begin();
+            viz_.visualizeScan(particles_[max_idx],
+                current_reading.scan_data);
+        }
+    }
+}
+
+void ParticleFilter::debugParticles() {
+    int i = 0;
+    for (auto& particle : particles_) {
+        printf("current particle (%d) : \n", i);
+        particle.print();
+        assert(map_->isFree(particle.x(), particle.y()));
+        i++;
     }
 }
 
@@ -82,6 +109,7 @@ void ParticleFilter::debugSensorModel() {
             break;
     }
     calculateW(reading.scan_data);
+    resample();
 }
 
 /**
@@ -111,14 +139,15 @@ void ParticleFilter::propagate(OdometryReading odom_p, OdometryReading odom_n)
 void ParticleFilter::calculateW(std::vector<double> scan_data)
 {
     for (size_t i = 0; i < particles_.size(); ++i) {
-        weights_[i] = sensor_model_.calculateWeight(scan_data, particles_[i]);
-        printf("i: %d, weight: %.4f\n", i, weights_[i]);
+        // printf("i: %d, weight: %.4f\n", i, weights_[i]);
+        log_weights_[i] = sensor_model_.calculateLogWeight(scan_data, particles_[i]);
+        // weights_[i] = sensor_model_.calculateWeight(scan_data, particles_[i]);
     }
 }
 
 void ParticleFilter::resample()
 {
-    std::vector<size_t> idx = std::move(resampler_->resample(weights_));
+    std::vector<size_t> idx = std::move(resampler_->resample(log_weights_));
     std::vector<RobotState> new_particles;
     std::for_each(idx.begin(), idx.end(),
         [&new_particles, &particles_](int id){

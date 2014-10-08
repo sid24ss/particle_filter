@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <algorithm>
+#include <cassert>
 
 #define RAD2DEG(th) th*180/M_PI
 #define DEG2RAD(th) th*M_PI/180
@@ -36,6 +37,7 @@ inline void normalizeData(std::vector<double>& data)
     std::for_each(data.begin(), data.end(),
         [&sum_of_weights](double val){sum_of_weights += val; }
     );
+    assert(sum_of_weights != 0);
     std::for_each(data.begin(), data.end(),
         [sum_of_weights](double& val){ val /= sum_of_weights; }
     );
