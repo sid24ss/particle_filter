@@ -11,6 +11,11 @@ Visualizer::Visualizer(std::string windowname,
     // Initialize the internal image and start the window thread
     cv::startWindowThread();
     cv::namedWindow(window_name_.c_str(), WINDOW_AUTOSIZE);
+
+    // cv::startWindowThread();
+    // scan_window_name_ = std::string("scan_window");
+    // cv::namedWindow(scan_window_name_.c_str(), WINDOW_AUTOSIZE);
+
     OccupancyGrid grid = map_->getMap();
 
     dim_x_ = grid.size();
@@ -82,7 +87,7 @@ void Visualizer::visualizePoses(const std::vector<RobotState>& robot_states)
 }
 
 void Visualizer::visualizeScan(const RobotState& robot_state, 
-                            const std::vector<double> scan_data)
+                            const std::vector<double>& scan_data)
 {
     // TODO : save current_image_ as part of the class
     visualizeRobotPose(current_image_, robot_state);
@@ -106,4 +111,18 @@ void Visualizer::visualizeScan(const RobotState& robot_state,
         line(current_image_, robot, range_point, cv::Scalar(0, 255, 0));
     }
     imshow(window_name_.c_str(), current_image_);
+}
+
+void Visualizer::visualizeOnlyScan(const std::vector<double>& scan_data)
+{
+    Mat scan_image(800,800, CV_64FC1);
+    // robot is at 0,0,0
+    auto bearings = SensorModelParams::getBearings();
+    for (size_t i = 0; i < bearings.size(); i++) {
+        double new_x = 400 + (scan_data[i]/10)*std::cos(bearings[i]);
+        double new_y = 400 + (scan_data[i]/10)*std::sin(bearings[i]);
+        circle(scan_image, Point(new_x, dim_y_ - new_y), 1,
+                                        Scalar(255,255, 255), -1);
+    }
+    imshow(scan_window_name_, scan_image);
 }
