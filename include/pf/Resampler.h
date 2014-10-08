@@ -9,7 +9,7 @@ namespace pf {
     public:
         Resampler();
         // returns indices
-        virtual std::vector<size_t> resample(std::vector<double> weights) = 0;
+        virtual std::vector<size_t> resample(std::vector<double>& weights) = 0;
     protected:
         std::default_random_engine generator_;
     };
@@ -17,7 +17,7 @@ namespace pf {
     class VanillaResampler : public Resampler {
     public:
         VanillaResampler();
-        virtual std::vector<size_t> resample(std::vector<double> weights);
+        virtual std::vector<size_t> resample(std::vector<double>& weights);
     private:
         std::uniform_real_distribution<double> distribution_;
     };

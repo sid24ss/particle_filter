@@ -35,7 +35,7 @@ namespace pf {
     };
 
     namespace SensorModelParams {
-        const double variance_scaling = 0.20;
+        // const double variance_scaling = 0.20;
         const double max_range = 8163.0;
         const double min_range = 0.0;
         inline std::vector<double> getBearings() {

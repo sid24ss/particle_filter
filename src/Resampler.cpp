@@ -15,7 +15,7 @@ VanillaResampler::VanillaResampler()
     distribution_ = std::uniform_real_distribution<double>(0.0, 1);
 }
 
-std::vector<size_t> VanillaResampler::resample(std::vector<double> log_weights)
+std::vector<size_t> VanillaResampler::resample(std::vector<double>& log_weights)
 {
     std::vector<double> weights(log_weights.size(), 0);
     for (size_t i = 0; i < log_weights.size(); ++i)

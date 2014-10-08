@@ -33,11 +33,11 @@ static inline double shortest_angular_distance(double from, double to)
 
 inline void normalizeData(std::vector<double>& data)
 {
-    double sum_of_weights;
+    double sum_of_weights = 0.0;
     std::for_each(data.begin(), data.end(),
         [&sum_of_weights](double val){sum_of_weights += val; }
     );
-    assert(sum_of_weights != 0);
+    assert(sum_of_weights != 0.0);
     std::for_each(data.begin(), data.end(),
         [sum_of_weights](double& val){ val /= sum_of_weights; }
     );

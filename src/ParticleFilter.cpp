@@ -78,15 +78,16 @@ void ParticleFilter::updateBelief() {
         }        
         odom_previous = odom_current;
         ++show_progress;
-        printf("waiting for keyboard input\n");
+        // printf("waiting for keyboard input\n");
         // std::cin.get();
         visualizeParticles();
-        if (current_reading.is_laser){
+        if (current_reading.is_laser || true){
             // find most likely state
             size_t max_idx = std::max_element(log_weights_.begin(),
                 log_weights_.end()) - log_weights_.begin();
-            viz_.visualizeScan(particles_[max_idx],
-                current_reading.scan_data);
+            viz_.plotRayTrace(particles_[max_idx], SensorModelParams::getBearings());
+            // viz_.visualizeScan(particles_[max_idx],
+            //     current_reading.scan_data);
         }
     }
 }

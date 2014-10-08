@@ -16,6 +16,7 @@ double SensorModel::calculateLogWeight(std::vector<double> ranges, RobotState st
     ranges = undersampleData(ranges);
     bearings = SensorModelParams::getBearings();
     bearings = undersampleData(bearings);
+    assert(ranges.size() == bearings.size());
     // double prob = 1;
     double logprob = 0;
     for (std::size_t i = 0; i < ranges.size(); ++i) {
@@ -37,6 +38,7 @@ double SensorModel::probMeasurementAtPose(double measurement, double bearing, Ro
         +  SensorModelParams::ZMAX  *   probMaxNoise(measurement);
     // printf("nominal_range : %f;\t measurement : %f;\t prob : %f\n", nominal_range, measurement,
         // prob);
+    assert(prob != 0.0);
     return prob;
 }
 
