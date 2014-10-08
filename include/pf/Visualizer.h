@@ -21,6 +21,7 @@ namespace pf {
                             const std::vector<double>& scan_data);
         void showMap();
         void visualizeOnlyScan(const std::vector<double>& scan_data);
+        void testMap();
     private:
         void visualizeRobotPose(cv::Mat& current_image, const RobotState& state);
         MapPtr map_;

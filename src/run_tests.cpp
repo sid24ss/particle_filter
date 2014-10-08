@@ -5,8 +5,8 @@ using namespace pf;
 
 int main () {
     Test t = Test();
-    // if (!t.testMap("maps/wean.dat"))
-    //     printf("map test failed.\n");
+    if (!t.testMap("maps/wean.dat"))
+        printf("map test failed.\n");
     // if (!t.testRobotState(std::vector<double> {0,1,0.1}))
     //     printf("robot state test failed.\n");
     // if (!t.testLogReading("log/robotdata1.log"))
@@ -23,6 +23,6 @@ int main () {
         printf("motion model test failed\n");
     */
     // t.testBoostDistributions();
-    t.testRayTrace("maps/wean.dat");
+    // t.testRayTrace("maps/wean.dat");
     return 0;
 }

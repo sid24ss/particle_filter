@@ -45,11 +45,12 @@ double SensorModel::probMeasurementAtPose(double measurement, double bearing, Ro
 double SensorModel::probGaussian(double measurement, double nominal_range)
 {
     double mean = nominal_range;
-    double prob;
 
-    boost::math::normal_distribution<> distribution(mean, SensorModelParams::HIT_SIGMA);
-    prob = boost::math::pdf(distribution, measurement);
-
+    // boost::math::normal_distribution<> distribution(mean, SensorModelParams::HIT_SIGMA);
+    // prob = boost::math::pdf(distribution, measurement);
+    double norm = 1.0/(SensorModelParams::HIT_SIGMA* std::sqrt(2*M_PI));
+    double prob = norm * std::exp(-0.5*std::pow(
+        ((measurement - mean)/SensorModelParams::HIT_SIGMA), 2));
     return prob;
 }
 

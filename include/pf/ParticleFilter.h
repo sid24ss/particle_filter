@@ -15,16 +15,18 @@ namespace pf {
     class ParticleFilter
     {
     public:
-        ParticleFilter(MapPtr map_ptr, std::string file_name, size_t num_particles);
+        ParticleFilter(FilterParams params);
         void initialize();
         void updateBelief();
-        void propagate(OdometryReading odom_1, OdometryReading odom_2);
+        bool propagate(OdometryReading odom_1, OdometryReading odom_2);
         void calculateW(std::vector<double> data);
         void resample();
         void visualizeParticles();
         void debugSensorModel();
         void debugParticles();
+        double compute_particle_variance();
     private:
+        FilterParams params_;
         MapPtr map_;
         Log log_;
         std::vector<RobotState> particles_;

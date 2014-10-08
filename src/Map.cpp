@@ -61,7 +61,7 @@ bool Map::loadFromFile(std::string file_name)
     map_min_[RobotDOF::Y] = dim_y_;
 
     prob_.resize(dim_x_);
-    boost::progress_display show_progress(dim_x_*dim_y_);
+    // boost::progress_display show_progress(dim_x_*dim_y_);
     for (size_t x = 0; x < dim_x_; ++x) {
         prob_[x].resize(dim_y_);
         for (size_t y = 0; y < dim_y_; ++y) {
@@ -77,7 +77,7 @@ bool Map::loadFromFile(std::string file_name)
                 if (map_max_[RobotDOF::Y] < y)
                     map_max_[RobotDOF::Y] = y;
             }
-            ++show_progress;
+            // ++show_progress;
         }
     }
     return true;

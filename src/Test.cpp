@@ -13,17 +13,21 @@ using namespace pf;
 
 bool Test::testMap(std::string file_name)
 {
-    Map map;
-    if (map.loadFromFile(file_name))
+    MapPtr map(new Map());
+    if (map->loadFromFile(file_name))
         {
             printf("Successfully loaded the map.\n");
-            return true;
+            // return true;
         }
     else
         {
             printf("Oops. Map wasn't read.\n");
-            return false;
+            // return false;
         }
+    Visualizer viz("test_map", map);
+    viz.testMap();
+    cv::waitKey(0);
+    return true;
 }
 
 bool Test::testRobotState(std::vector<double> input_state)

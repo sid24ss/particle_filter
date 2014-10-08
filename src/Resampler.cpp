@@ -15,12 +15,14 @@ VanillaResampler::VanillaResampler()
     distribution_ = std::uniform_real_distribution<double>(0.0, 1);
 }
 
-std::vector<size_t> VanillaResampler::resample(std::vector<double>& log_weights)
+std::vector<size_t> VanillaResampler::resample(std::vector<double>& weights)
 {
-    std::vector<double> weights(log_weights.size(), 0);
-    for (size_t i = 0; i < log_weights.size(); ++i)
-        weights[i] = std::exp(log_weights[i]);
+    // std::vector<double> weights(log_weights);
+    // std::vector<double> weights(log_weights.size(), 0);
+    // for (size_t i = 0; i < log_weights.size(); ++i)
+    //     weights[i] = std::exp(log_weights[i]);
     normalizeData(weights);
+    // printf("normalized weights\n");
     // std::for_each(weights.begin(), weights.end(), [](double val){
     //     printf("%f ", val);
     // });
@@ -29,14 +31,25 @@ std::vector<size_t> VanillaResampler::resample(std::vector<double>& log_weights)
     for (size_t i = 0; i < weights.size(); i++) {
         cumsum[i+1] = cumsum[i] + weights[i];
     }
+    // printf("cumsum\n");
+    // std::for_each(cumsum.begin(), cumsum.end(), [](double val){
+    //     printf("%f ", val);
+    // });
+    // printf("\n");
     std::vector<size_t> idx;
     for (size_t i = 0; i < weights.size(); i++){
         double sample = distribution_(generator_);
+        // printf("drawn : %f\n", sample);
         // TODO : Do a binary search
         size_t j = 0;
         while(cumsum[j] <= sample)
             j++;
         idx.push_back(j-1);
     }
+    // printf("idx\n");
+    // std::for_each(idx.begin(), idx.end(), [](double val){
+    //     printf("%f ", val);
+    // });
+    // printf("\n");
     return idx;
 }

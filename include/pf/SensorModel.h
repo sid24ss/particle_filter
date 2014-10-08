@@ -15,7 +15,7 @@ namespace pf {
         double probDecaying(double measurement, double nominal_range);
         // snap ranges greater than max_range to max_range
         void filterRanges(std::vector<double>& ranges);
-        std::vector<double> undersampleData(std::vector<double> data);
+        static std::vector<double> undersampleData(std::vector<double> data);
     private:
         // map can be set only once
         MapPtr map_;

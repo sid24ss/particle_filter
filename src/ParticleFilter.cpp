@@ -3,25 +3,30 @@
 #include <chrono>
 
 #include <boost/progress.hpp>
+#include <boost/bind.hpp>
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
+#include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/variance.hpp>
 
 #include <pf/ParticleFilter.h>
 #include <pf/Log.h>
 
 using namespace pf;
+using namespace boost;
 
-ParticleFilter::ParticleFilter(MapPtr map_ptr,
-                               std::string log_file_name,
-                               size_t num_particles) : 
-    map_(map_ptr),
-    log_(log_file_name),
-    particles_(num_particles),
-    weights_(num_particles, 0),
-    log_weights_(num_particles, 0),
-    num_particles_(num_particles),
+ParticleFilter::ParticleFilter(FilterParams params) : 
+    params_(params),
+    map_(new Map(params.map_file)),
+    log_(params.log_file),
+    particles_(params.num_particles),
+    weights_(params.num_particles, 0),
+    log_weights_(params.num_particles, 0),
+    num_particles_(params.num_particles),
     motion_model_(map_),
     sensor_model_(map_),
     resampler_(new VanillaResampler()),
-    viz_("particle_filter", map_ptr)
+    viz_("particle_filter", map_)
 { }
 
 void ParticleFilter::initialize()
@@ -46,6 +51,7 @@ void ParticleFilter::initialize()
     }
 }
 
+
 void ParticleFilter::updateBelief() {
     OdometryReading odom_previous;
     OdometryReading odom_current;
@@ -54,6 +60,7 @@ void ParticleFilter::updateBelief() {
     bool first_time = true;
     boost::progress_display show_progress(log_.totalReadings());
     visualizeParticles();
+    bool has_moved = false;
     while (!log_.isEmpty()) {
     // while we still have sensor readings
         // get the next reading
@@ -70,26 +77,25 @@ void ParticleFilter::updateBelief() {
                 continue;
         }
 
-        propagate(odom_previous, odom_current);
         // visualizeParticles();
-        if (current_reading.is_laser) {
+        if (current_reading.is_laser && has_moved) {
             calculateW(current_reading.scan_data);
             resample();
-        }        
-        odom_previous = odom_current;
-        ++show_progress;
-        // printf("waiting for keyboard input\n");
-        // std::cin.get();
-        visualizeParticles();
-        if (current_reading.is_laser){
+            // Scan visualization
             // find most likely state
             size_t max_idx = std::max_element(log_weights_.begin(),
                 log_weights_.end()) - log_weights_.begin();
             // viz_.plotRayTrace(particles_[max_idx], SensorModelParams::getBearings());
             viz_.visualizeScan(particles_[max_idx],
-                current_reading.scan_data);
-            // viz_.visualizeOnlyScan(current_reading.scan_data);
+                SensorModel::undersampleData(current_reading.scan_data));
+        } else {
+            has_moved = propagate(odom_previous, odom_current);
+            visualizeParticles();
         }
+        odom_previous = odom_current;
+        ++show_progress;
+        // printf("waiting for keyboard input\n");
+        // std::cin.get();
     }
 }
 
@@ -122,15 +128,16 @@ void ParticleFilter::debugSensorModel() {
  * @param odom_p the previous odometry reading
  * @param odom_n the next odometry reading
  */
-void ParticleFilter::propagate(OdometryReading odom_p, OdometryReading odom_n)
+bool ParticleFilter::propagate(OdometryReading odom_p, OdometryReading odom_n)
 {
     // return if previous reading and the current reading are the same
     if (odom_p == odom_n)
-        return;
+        return false;
     // if not, we need to invoke the motion model and move all particles
     for (auto& particle : particles_) {
         particle = motion_model_.sampleNextState(particle, odom_p, odom_n);
     }
+    return true;
 }
 
 /**
@@ -143,23 +150,40 @@ void ParticleFilter::calculateW(std::vector<double> scan_data)
     for (size_t i = 0; i < particles_.size(); ++i) {
         // printf("i: %d, weight: %.4f\n", i, weights_[i]);
         log_weights_[i] = sensor_model_.calculateLogWeight(scan_data, particles_[i]);
-        // weights_[i] = sensor_model_.calculateWeight(scan_data, particles_[i]);
     }
 }
 
 void ParticleFilter::resample()
 {
-    std::vector<size_t> idx = std::move(resampler_->resample(log_weights_));
-    std::vector<RobotState> new_particles;
-    std::for_each(idx.begin(), idx.end(),
-        [&new_particles, &particles_](int id){
-            new_particles.emplace_back(particles_[id]);
-        }
-    );
-    particles_ = std::move(new_particles);
+    weights_.resize(log_weights_.size());
+    for (size_t i = 0; i < log_weights_.size(); ++i)
+        weights_[i] = std::exp(log_weights_[i]);
+    if (compute_particle_variance() > SamplerParams::VARIANCE_THRESHOLD){
+        std::vector<size_t> idx = std::move(resampler_->resample(weights_));
+        std::vector<RobotState> new_particles;
+        std::for_each(idx.begin(), idx.end(),
+            [&new_particles, &particles_](int id){
+                new_particles.emplace_back(particles_[id]);
+            }
+        );
+        particles_ = std::move(new_particles);
+    } else {
+        initialize();
+    }
 }
 
 void ParticleFilter::visualizeParticles()
 {
     viz_.visualizePoses(particles_);
+}
+
+double ParticleFilter::compute_particle_variance()
+{
+    // compute the variance over the weights
+    accumulator_set<double, stats<tag::variance> > acc;
+    for_each(weights_.begin(), weights_.end(), bind<void>(ref(acc), _1));
+
+    // cout << mean(acc) << endl;
+    // cout << (variance(acc)) << endl;
+    return variance(acc);
 }

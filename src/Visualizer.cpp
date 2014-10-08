@@ -44,13 +44,23 @@ void Visualizer::showMap()
     // waitKey(0);
 }
 
+void Visualizer::testMap()
+{
+    Mat current_image = map_img_.clone();
+    circle(current_image, Point(100, dim_y_-1 - 200), 15,
+                                        Scalar(255,255, 255), -1);
+    circle(current_image, Point(100, dim_y_-1 - 600), 15,
+                                        Scalar(0,0, 255), -1);
+    imshow(window_name_.c_str(), current_image);
+}
+
 void Visualizer::plotRayTrace(const RobotState& robot_state, std::vector<double> bearings)
 {
     Mat current_image = map_img_.clone();
     visualizeRobotPose(current_image, robot_state);
     // get the map coordinates
     auto d_robot = map_->worldToGrid(robot_state.x(), robot_state.y());
-    cv::Point robot(d_robot.first, dim_y_ - d_robot.second);
+    cv::Point robot(d_robot.first, dim_y_-1 - d_robot.second);
     for (auto bearing : bearings) {
         // get the nominal reading
         double nominal_reading = map_->getNominalReading(robot_state, bearing);
@@ -62,7 +72,7 @@ void Visualizer::plotRayTrace(const RobotState& robot_state, std::vector<double>
                                 normalize_angle(robot_state.theta() + bearing)
                             );
         auto d_new_coords = map_->worldToGrid(new_x, new_y);
-        cv::Point range_point(d_new_coords.first, dim_y_ - d_new_coords.second);
+        cv::Point range_point(d_new_coords.first, dim_y_-1 - d_new_coords.second);
         line(current_image, robot, range_point, cv::Scalar(0, 255, 0));
     }
     imshow(window_name_.c_str(), current_image);
@@ -73,7 +83,7 @@ void Visualizer::visualizeRobotPose(Mat& current_image, const RobotState& state)
     auto d_robot = map_->worldToGrid(state.x(), state.y());
     int radius = 1;
     int thickness = -1;
-    circle(current_image, Point(d_robot.first, dim_y_ - d_robot.second), radius, 
+    circle(current_image, Point(d_robot.first, dim_y_-1 - d_robot.second), radius, 
         Scalar(0, 0, 255), thickness);
 }
 
@@ -94,9 +104,8 @@ void Visualizer::visualizeScan(const RobotState& robot_state,
     // get the map coordinates
     // auto d_robot = map_->worldToGrid(robot_state.x(), robot_state.y());
     auto laser_coords = robot_state.getLaserCoords();
-    auto d_laser = map_->worldToGrid(laser_coords[RobotDOF::X], laser_coords[
-        RobotDOF::Y]);
-    cv::Point robot(d_laser.first, dim_y_ - d_laser.second);
+    auto d_laser = map_->worldToGrid(laser_coords[RobotDOF::X], laser_coords[RobotDOF::Y]);
+    cv::Point robot_d(d_laser.first, dim_y_-1 - d_laser.second);
     auto bearings = SensorModelParams::getBearings();
     for (size_t i = 0; i < bearings.size(); i++) {
         // convert this to a line and plot
@@ -107,8 +116,8 @@ void Visualizer::visualizeScan(const RobotState& robot_state,
                                 normalize_angle(laser_coords[RobotDOF::THETA] + bearings[i])
                             );
         auto d_new_coords = map_->worldToGrid(new_x, new_y);
-        cv::Point range_point(d_new_coords.first, dim_y_ - d_new_coords.second);
-        line(current_image_, robot, range_point, cv::Scalar(0, 255, 0));
+        cv::Point range_point(d_new_coords.first, dim_y_-1 - d_new_coords.second);
+        line(current_image_, robot_d, range_point, cv::Scalar(0, 255, 0));
     }
     imshow(window_name_.c_str(), current_image_);
 }
@@ -121,7 +130,7 @@ void Visualizer::visualizeOnlyScan(const std::vector<double>& scan_data)
     for (size_t i = 0; i < bearings.size(); i++) {
         double new_x = 400 + (scan_data[i]/10)*std::cos(bearings[i]);
         double new_y = 400 + (scan_data[i]/10)*std::sin(bearings[i]);
-        circle(scan_image, Point(new_x, dim_y_ - new_y), 1,
+        circle(scan_image, Point(new_x, dim_y_-1 - new_y), 1,
                                         Scalar(255,255, 255), -1);
     }
     imshow(scan_window_name_, scan_image);

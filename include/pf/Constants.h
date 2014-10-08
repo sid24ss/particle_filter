@@ -46,7 +46,7 @@ namespace pf {
             });
             return bearings;
         }
-        const double skip = 5;
+        const double skip = 10;
 
         const double HIT_SIGMA = 20;
         const double SHORT_NOISE_LAMBDA = 0.0005;
@@ -61,6 +61,17 @@ namespace pf {
         // Note : The Map is occupied if the prob_ value is 0
         // unoccupied if prob_ value is 1
         const double WALL_TOL = 0.1;
-        const double FREE_TOL = 0.0;
+        const double FREE_TOL = 0.001;
     }
+
+    namespace SamplerParams {
+        const double VARIANCE_THRESHOLD = 1e-08;
+    }
+
+    struct FilterParams{
+        std::string map_file;
+        std::string log_file;
+        size_t num_particles;
+        bool record_video;
+    };
 }
