@@ -27,11 +27,11 @@ namespace pf {
     };
     
     struct MotionModelParams {
-        static constexpr double alpha_1 = 1.0/30.0;
+        static constexpr double alpha_1 = 0.01;
         // assumes distance in cm and angle in rad!
-        static constexpr double alpha_2  = DEG2RAD(2)/(15);
-        static constexpr double alpha_3 = 1.0/30.0;
-        static constexpr double alpha_4 = 0.0;
+        static constexpr double alpha_2  = 0.01;
+        static constexpr double alpha_3 = 0.1;
+        static constexpr double alpha_4 = 0.1;
     };
 
     namespace SensorModelParams {
