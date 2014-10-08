@@ -1,3 +1,4 @@
+#include <cmath>
 #include <boost/math/distributions.hpp>
 
 #include <pf/Constants.h>
@@ -69,6 +70,16 @@ double SensorModel::probUniform()
 {
     return 0.2;
     // return 1.0/(SensorModelParams::max_range - SensorModelParams::min_range);
+}
+
+double SensorModel::probDecaying(double measurement, double nominal_range)
+{
+    double res = 0;
+    double norm = 1/(1-math::exp(-SensorModelParams::SHORT_NOISE_LAMBDA*nominal_range));
+    if (measurement < nominal_range) {
+        res = SensorModelParams::SHORT_NOISE_LAMBDA*math::exp(-SensorModelParams::SHORT_NOISE_LAMBDA*measurement)*norm;
+    }
+    return res;
 }
 
 void SensorModel::filterRanges(std::vector<double>& ranges)
