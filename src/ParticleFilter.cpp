@@ -79,7 +79,7 @@ void ParticleFilter::updateBelief() {
         odom_previous = odom_current;
         ++show_progress;
         printf("waiting for keyboard input\n");
-        std::cin.get();
+        // std::cin.get();
         visualizeParticles();
         if (current_reading.is_laser){
             // find most likely state
@@ -151,7 +151,7 @@ void ParticleFilter::resample()
     std::vector<RobotState> new_particles;
     std::for_each(idx.begin(), idx.end(),
         [&new_particles, &particles_](int id){
-            new_particles.push_back(particles_[id]);
+            new_particles.emplace_back(particles_[id]);
         }
     );
     particles_ = std::move(new_particles);

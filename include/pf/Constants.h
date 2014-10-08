@@ -48,6 +48,7 @@ namespace pf {
         }
         const double skip = 5;
 
+        const double HIT_SIGMA = 20;
         const double SHORT_NOISE_LAMBDA = 0.0005;
         const double ZHIT = 0.8;
         const double ZNOISE = 0.1;

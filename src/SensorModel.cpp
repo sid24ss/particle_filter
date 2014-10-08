@@ -43,33 +43,18 @@ double SensorModel::probMeasurementAtPose(double measurement, double bearing, Ro
 double SensorModel::probGaussian(double measurement, double nominal_range)
 {
     double mean = nominal_range;
-    // double std = SensorModelParams::variance_scaling*nominal_range;
-    // Abhijeet : 3 sigma is 2 cm
-    // double std = 2.0/3;
-    double std = 1.0;
     double prob;
 
-    // if (mean < SensorModelParams::max_range) {
-            boost::math::normal_distribution<> distribution(mean, std);
-            double normalizer = 
-                boost::math::cdf(distribution, SensorModelParams::max_range)
-                - boost::math::cdf(distribution, SensorModelParams::min_range);
-            prob = boost::math::pdf(distribution, measurement)/normalizer;
-    // }
-    // else {
-    //     prob = 0;
-    //     // if (measurement == SensorModelParams::max_range)
-    //     //     prob = 1;
-    //     // else
-    //     //     prob = 0;
-    // }
+    boost::math::normal_distribution<> distribution(mean, SensorModelParams::HIT_SIGMA);
+    prob = boost::math::pdf(distribution, measurement);
+
     return prob;
 }
 
 double SensorModel::probUniform()
 {
-    return 0.2;
-    // return 1.0/(SensorModelParams::max_range - SensorModelParams::min_range);
+    // return 0.2;
+    return 1.0/(SensorModelParams::max_range - SensorModelParams::min_range);
 }
 
 double SensorModel::probMaxNoise(double measurement)
