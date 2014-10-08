@@ -1,3 +1,4 @@
+#include <cmath>
 #include <boost/math/distributions.hpp>
 
 #include <pf/Constants.h>
@@ -30,8 +31,6 @@ double SensorModel::probMeasurementAtPose(double measurement, double bearing, Ro
     // TODO: get nominal range by raycasting
     double nominal_range = map_->getNominalReading(state, bearing);
     double prob;
-    double prob_gaussian = probGaussian(measurement, nominal_range);
-    double prob_uniform = probUniform();
     prob = SensorModelParams::ZHIT  *   probGaussian(measurement, nominal_range)
         +  SensorModelParams::ZNOISE*   probUniform()
         +  SensorModelParams::ZSHORT*   probDecaying(measurement, nominal_range)
@@ -76,6 +75,16 @@ double SensorModel::probUniform()
 double SensorModel::probMaxNoise(double measurement)
 {
     return static_cast<double>(measurement == SensorModelParams::max_range);
+}
+
+double SensorModel::probDecaying(double measurement, double nominal_range)
+{
+    double res = 0;
+    double norm = 1/(1-std::exp(-SensorModelParams::SHORT_NOISE_LAMBDA*nominal_range));
+    if (measurement < nominal_range) {
+        res = SensorModelParams::SHORT_NOISE_LAMBDA*std::exp(-SensorModelParams::SHORT_NOISE_LAMBDA*measurement)*norm;
+    }
+    return res;
 }
 
 void SensorModel::filterRanges(std::vector<double>& ranges)
