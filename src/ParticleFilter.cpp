@@ -1,6 +1,8 @@
 #include <cmath>
 #include <random>
+#include <limits>
 #include <chrono>
+// #include <omp.h>
 
 #include <boost/progress.hpp>
 #include <boost/bind.hpp>
@@ -25,9 +27,13 @@ ParticleFilter::ParticleFilter(FilterParams params) :
     num_particles_(params.num_particles),
     motion_model_(map_),
     sensor_model_(map_),
-    resampler_(new LowVarianceResampler()),
-    viz_("particle_filter", map_)
-{ }
+    resampler_(new VanillaResampler()),
+    viz_("particle_filter", map_),
+    record_video_(params.record_video)
+{
+    video_writer_.open(params.video_file_name, params.fourcc, params.fps, params.
+        frame_size, true);
+}
 
 void ParticleFilter::initialize()
 {
@@ -36,6 +42,8 @@ void ParticleFilter::initialize()
     std::pair <double, double> map_size = map_->getSize();
     std::uniform_real_distribution<double> x_distribution(0.0, map_size.first);
     std::uniform_real_distribution<double> y_distribution(0.0, map_size.second);
+    // std::uniform_real_distribution<double> x_distribution(3650, 4250);
+    // std::uniform_real_distribution<double> y_distribution(4200, 4840);
     std::uniform_real_distribution<double> theta_distribution(-M_PI, M_PI);
 
     size_t count = 0;
@@ -78,7 +86,7 @@ void ParticleFilter::updateBelief() {
         }
 
         // visualizeParticles();
-        if (current_reading.is_laser && has_moved) {
+        if (current_reading.is_laser) {
             calculateW(current_reading.scan_data);
             resample();
             // Scan visualization
@@ -87,12 +95,12 @@ void ParticleFilter::updateBelief() {
                 log_weights_.end()) - log_weights_.begin();
             viz_.plotRayTrace(particles_[max_idx], SensorModel::undersampleData(SensorModelParams::getBearings()));
             viz_.visualizeScan(particles_[max_idx], current_reading.scan_data);
-        } else {
-            has_moved = propagate(odom_previous, odom_current);
-            visualizeParticles();
         }
+        has_moved = propagate(odom_previous, odom_current);
+        
         odom_previous = odom_current;
         ++show_progress;
+        visualizeParticles();
         // printf("waiting for keyboard input\n");
         // std::cin.get();
     }
@@ -142,8 +150,14 @@ bool ParticleFilter::propagate(OdometryReading odom_p, OdometryReading odom_n)
     if (odom_p == odom_n)
         return false;
     // if not, we need to invoke the motion model and move all particles
-    for (auto& particle : particles_) {
-        particle = motion_model_.sampleNextState(particle, odom_p, odom_n);
+    // #pragma omp parallel for
+    // for (auto& particle : particles_) {
+    //     particle = motion_model_.sampleNextState(particle, odom_p, odom_n);
+    // }
+
+    // #pragma omp parallel for
+    for (size_t i = 0; i < particles_.size(); ++i) {
+        particles_[i] = motion_model_.sampleNextState(particles_[i], odom_p, odom_n);
     }
     return true;
 }
@@ -155,17 +169,27 @@ bool ParticleFilter::propagate(OdometryReading odom_p, OdometryReading odom_n)
  */
 void ParticleFilter::calculateW(std::vector<double> scan_data)
 {
+     //#pragma omp threadprivate(particles_)
+    // int th_id;
+    // #pragma omp parallel for
     for (size_t i = 0; i < particles_.size(); ++i) {
+        // th_id = omp_get_thread_num();
+     // printf("thread number %d\n", th_id);
         // printf("i: %d, weight: %.4f\n", i, weights_[i]);
-        log_weights_[i] = sensor_model_.calculateLogWeight(scan_data, particles_[i]);
+        // if (!map_->isFree(particles_[i].x(), particles_[i].y()))
+        //     log_weights_[i] = - std::numeric_limits<double>::infinity();
+        // else
+            log_weights_[i] = sensor_model_.calculateLogWeight(scan_data, particles_[i]);        
     }
 }
 
 void ParticleFilter::resample()
 {
     weights_.resize(log_weights_.size());
-    for (size_t i = 0; i < log_weights_.size(); ++i)
+    for (size_t i = 0; i < log_weights_.size(); ++i) {
         weights_[i] = std::exp(log_weights_[i]);
+        weights_[i] = std::pow(weights_[i],SamplerParams::POWER_SCALE);
+    }
     if (compute_particle_variance() >= SamplerParams::VARIANCE_THRESHOLD){
         std::vector<size_t> idx = std::move(resampler_->resample(weights_));
         std::vector<RobotState> new_particles;
@@ -176,13 +200,17 @@ void ParticleFilter::resample()
         );
         particles_ = std::move(new_particles);
     } else {
-        initialize();
+        printf("Weight variance log: %f\n", std::log(compute_particle_variance()));
+        // do nothing
     }
 }
 
 void ParticleFilter::visualizeParticles()
 {
     viz_.visualizePoses(particles_);
+    if (record_video_) {
+        video_writer_.write(viz_.getCurrentImage()); 
+    }
 }
 
 double ParticleFilter::compute_particle_variance()

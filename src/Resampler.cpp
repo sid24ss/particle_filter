@@ -70,7 +70,7 @@ std::vector<size_t> LowVarianceResampler::resample(std::vector<double>& weights)
     // std::for_each(cumsum.begin(), cumsum.end(), [](double val){
     //     printf("%f ", val);
     // });
-    // printf("\n");
+    printf("\n");
     double r = distribution_(generator_);
     std::vector<size_t> idx;
     for (size_t i = 0; i < weights.size(); i++){

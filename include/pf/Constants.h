@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <numeric>
+#include <opencv2/core/core.hpp>
 
 #include <pf/Utilities.h>
 
@@ -30,9 +31,9 @@ namespace pf {
         static constexpr double alpha_1 = 0.01;
         // assumes distance in cm and angle in rad!
         static constexpr double alpha_2  = 0.01;
-        static constexpr double alpha_3 = 0.1;
-        static constexpr double alpha_4 = 0.1;
-    };
+        static constexpr double alpha_3 = 0.01;
+        static constexpr double alpha_4 = 0.01;
+     };
 
     namespace SensorModelParams {
         // const double variance_scaling = 0.20;
@@ -46,13 +47,13 @@ namespace pf {
             });
             return bearings;
         }
-        const double skip = 5;
+        const double skip = 6;
 
-        const double HIT_SIGMA = 20;
+        const double HIT_SIGMA = 20; 
         const double SHORT_NOISE_LAMBDA = 0.0005;
-        const double ZHIT = 0.8; //0.8
-        const double ZNOISE = 10; //0.2
-        const double ZSHORT = 0.0; //0.095;
+        const double ZHIT = 2; //0.8
+        const double ZNOISE = 1; //0.2
+        const double ZSHORT = 0.05; //0.095;
         const double ZMAX = 0.0; //0.005;
     }
 
@@ -65,7 +66,8 @@ namespace pf {
     }
 
     namespace SamplerParams {
-        const double VARIANCE_THRESHOLD = 0e-08;
+        const double VARIANCE_THRESHOLD = 0;
+        const double POWER_SCALE = 0.01;
     }
 
     struct FilterParams{
@@ -73,5 +75,10 @@ namespace pf {
         std::string log_file;
         size_t num_particles;
         bool record_video;
+        std::string video_file_name;
+        int fourcc;
+        double fps;
+        cv::Size frame_size;
     };
+
 }

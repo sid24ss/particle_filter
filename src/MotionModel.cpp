@@ -22,10 +22,16 @@ RobotState MotionModel::sampleNextState(const RobotState& state_1, const Odometr
     double std_2 = MotionModelParams::alpha_3*d_s_enc + MotionModelParams::alpha_4*(d_th_enc_1 + d_th_enc_2);
     double std_3 = MotionModelParams::alpha_1*d_th_enc_2 + MotionModelParams::alpha_2*d_s_enc;
     
+    double d_th_1 = 0.0;
+    double d_s = 0.0;
+    double d_th_2 = 0.0;
     // differentials in world frame
-    double d_th_1 = d_th_enc_1 + distribution_(generator_)*std_1;
-    double d_s = d_s_enc + distribution_(generator_)*std_2;
-    double d_th_2 = d_th_enc_2 + distribution_(generator_)*std_3;
+    if (std::fabs(std_1) > 0)
+        d_th_1 = d_th_enc_1 + distribution_(generator_)*std_1;
+    if (std::fabs(std_2) > 0)
+        d_s = d_s_enc + distribution_(generator_)*std_2;
+    if (std::fabs(std_3) > 0)
+        d_th_2 = d_th_enc_2 + distribution_(generator_)*std_3;
 
     // sample next state
     RobotState state_2;
@@ -36,7 +42,8 @@ RobotState MotionModel::sampleNextState(const RobotState& state_1, const Odometr
     if (!map_->isFree(state_2.x(), state_2.y())) {
         state_2.x(state_1.x());
         state_2.y(state_1.y());
-        state_2.theta(state_2.theta());
+        state_2.theta(normalize_angle(state_1.theta() + distribution_(generator_)*
+            DEG2RAD(10)));
     }
     return state_2;
 }

@@ -110,7 +110,7 @@ bool Test::testRayTrace(std::string map_file)
     if (!map_loaded)
         return false;
     Visualizer viz("test_ray_trace", mapptr);
-    RobotState test_state(5500, 6000, DEG2RAD(-110));
+    RobotState test_state(3950, 4540, DEG2RAD(-90));
     // viz.showMap();
     
     viz.plotRayTrace(test_state, SensorModelParams::getBearings());
